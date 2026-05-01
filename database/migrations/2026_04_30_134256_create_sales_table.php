@@ -16,15 +16,11 @@ return new class extends Migration
 
             $table->foreignId('customer_id')->constrained('users')->onDelete('restrict');
             $table->foreignId('employee_id')->constrained('users')->onDelete('restrict');
-
             $table->date('sale_date');
-
             $table->decimal('total_amount', 10, 2);
             $table->decimal('amount_paid', 10, 2);
             $table->decimal('change', 10, 2)->nullable();
-
-            $table->string('payment_method');
-
+            $table->enum('payment_method', ['cash','credit']);
             $table->timestamps();
         });
     }

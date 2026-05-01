@@ -19,10 +19,9 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->integer('quantity');
-
             $table->date('received_date');
 
-            $table->string('reference_type')->nullable();
+            $table->enum('reference_type', ['restock','return','adjustment']);
             $table->unsignedBigInteger('reference_id')->nullable();
 
             $table->timestamps();

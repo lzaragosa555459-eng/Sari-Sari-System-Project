@@ -13,21 +13,14 @@ return new class extends Migration
     {
         Schema::create('stock_out', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('product_id')
                 ->constrained('products')
                 ->onDelete('cascade');
-
             $table->integer('quantity');
-
             $table->string('reason')->nullable(); 
-            // e.g. sold, damaged, expired
-
             $table->date('transaction_date');
-
-            $table->string('reference_type')->nullable();
+            $table->enum('reference_type', ['sale','damage','adjustment']);
             $table->unsignedBigInteger('reference_id')->nullable();
-
             $table->timestamps();
         });
     }

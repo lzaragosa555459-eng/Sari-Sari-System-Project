@@ -54,7 +54,7 @@
 
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
-                            <p class="text-sm font-semibold text-red-500">Outstanding Credits</p>
+                            <p class="text-sm font-semibold text-red-500">Outstanding Credits left (Utang)</p>
                             <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
                                 ₱{{ number_format($totalOutstandingCredit, 2) }}
                             </p>
