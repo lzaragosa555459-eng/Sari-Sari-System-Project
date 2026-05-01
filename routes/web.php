@@ -17,15 +17,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/inventory', [InventoryController::class, 'index']);
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
 
-    Route::get('/sales', [SaleController::class, 'index']);
+    Route::get('/sales', [SaleController::class, 'index'])->name('sales');
     Route::get('/credits', function () {
         return view('credits');
-    });
+    })->name('credits');
     Route::get('/customers', function () {
         return view('customers');
-    });
+    })->name('customers');
 
 });
 
