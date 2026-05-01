@@ -23,7 +23,7 @@ class SaleSeeder extends Seeder
             ],
             [
                 'customer_id' => 2,
-                'employee_id' => 3,
+                'employee_id' => 2,
                 'sale_date' => now()->subDays(2),
                 'total_amount' => 200.00,
                 'amount_paid' => 100.00,
@@ -45,7 +45,7 @@ class SaleSeeder extends Seeder
             ],
             [
                 'customer_id' => 4,
-                'employee_id' => 4,
+                'employee_id' => 5,
                 'sale_date' => now(),
                 'total_amount' => 300.00,
                 'amount_paid' => 0.00,
@@ -56,7 +56,7 @@ class SaleSeeder extends Seeder
             ],
             [
                 'customer_id' => 5,
-                'employee_id' => 3,
+                'employee_id' => 5,
                 'sale_date' => now(),
                 'total_amount' => 120.00,
                 'amount_paid' => 60.00,
@@ -67,7 +67,7 @@ class SaleSeeder extends Seeder
             ],
             [
                 'customer_id' => 6,
-                'employee_id' => 2,
+                'employee_id' => 5,
                 'sale_date' => now()->subHours(5),
                 'total_amount' => 55.00,
                 'amount_paid' => 60.00,
@@ -78,7 +78,7 @@ class SaleSeeder extends Seeder
             ],
             [
                 'customer_id' => 1,
-                'employee_id' => 3,
+                'employee_id' => 4,
                 'sale_date' => now()->subHours(1),
                 'total_amount' => 95.00,
                 'amount_paid' => 100.00,
