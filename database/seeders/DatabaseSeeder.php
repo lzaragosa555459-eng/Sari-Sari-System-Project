@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
             CreditPaymentSeeder::class,
             StockInSeeder::class,
             StockOutSeeder::class,
+            InventorySeeder::class,
         ]);
     }
 }
