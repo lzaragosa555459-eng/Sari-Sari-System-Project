@@ -28,8 +28,7 @@
 
                     <button 
                         onclick="openReceipt({{ $sale->id }})"
-                        class="mt-5 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-indigo-100 dark:shadow-none"
-                    >
+                        class="mt-5 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-indigo-100 dark:shadow-none">
                         View Receipt
                     </button>
 
@@ -70,6 +69,11 @@ function openReceipt(id) {
         .then(data => {
 
             let html = `
+                <p class="text-light">${new Date(data.sale.sale_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })}</p>
                 <p class="font-bold text-gray-900 dark:text-white">Sale #${data.sale.id}</p>
                 <p class="text-xs text-gray-500 mb-4">
                     Customer: ${data.sale.customer_name ?? 'Walk-in'}
