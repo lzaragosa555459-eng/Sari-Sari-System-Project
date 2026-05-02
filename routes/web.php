@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PosController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,7 +31,16 @@ Route::middleware(['auth', 'role:1'])->group(function () {
 
 });
 Route::middleware(['auth', 'role:2'])->group(function () {
-    Route::get('/employee', [DashboardController::class, 'employee_index'])->name('employee-dashboard');
+    Route::get('/employee-dashboard', [DashboardController::class, 'employee_index'])->name('employee-dashboard');
+    Route::get('/employee-pos', [PosController::class, 'index'])->name('pos');
+
+    Route::post('/employee-pos/add', [PosController::class, 'addToCart'])->name('pos.add');
+
+    Route::post('/employee-pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
+
+    Route::get('/employee-pos/remove/{id}', [PosController::class, 'removeItem'])->name('pos.remove');
+
+    Route::get('/employee-pos/clear', [PosController::class, 'clearCart'])->name('pos.clear');
 });
 
 require __DIR__.'/auth.php';

@@ -15,6 +15,9 @@
                     <x-nav-link :href="route('employee-dashboard')" :active="request()->routeIs('employee.dashboard')">
                         Dashboard
                     </x-nav-link>
+                    <x-nav-link :href="route('pos')" :active="request()->routeIs('employee.pos')">
+                        POS
+                    </x-nav-link>
                 </div>
             </div>
 

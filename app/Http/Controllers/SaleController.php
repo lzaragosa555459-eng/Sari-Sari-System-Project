@@ -23,4 +23,5 @@ class SaleController extends Controller
 
         return view('sales', compact('sales'));
     }
+
 }
