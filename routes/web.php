@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CreditController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProfileController;
@@ -20,12 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
 
     Route::get('/sales', [SaleController::class, 'index'])->name('sales');
-    Route::get('/credits', function () {
-        return view('credits');
-    })->name('credits');
-    Route::get('/customers', function () {
-        return view('customers');
-    })->name('customers');
+
+    Route::get('/credits', [CreditController::class, 'index'])->name('credits');
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
 
 });
 
