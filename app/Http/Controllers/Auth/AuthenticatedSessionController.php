@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->role_id == 2) {
-            return redirect()->route('employee.dashboard');
+            return redirect()->route('employee-dashboard');
         }
 
         return redirect()->route('customer.dashboard');

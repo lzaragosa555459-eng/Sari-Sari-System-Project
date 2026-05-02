@@ -7,6 +7,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmployeeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,7 +15,8 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:1'])->group(function () {
+    Route::get('/admin/dashboard', [DashboardController::class, 'index']);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -27,7 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
 
 });
-Route::middleware(['auth', 'role:1'])->group(function () {
-    Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+Route::middleware(['auth', 'role:2'])->group(function () {
+    Route::get('/employee', [DashboardController::class, 'employee_index'])->name('employee-dashboard');
 });
+
 require __DIR__.'/auth.php';
