@@ -79,7 +79,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="font-bold text-gray-900 dark:text-white">₱{{ number_format($subtotal, 2) }}</p>
-                                            <a href="{{ route('pos.remove', $item['id']) }}" class="text-[10px] text-red-500 hover:underline uppercase font-bold">Remove</a>
+                                            <a href="{{ route('pos.remove', $item['id']) }}" class="text-[10px] text-red-500 hover:underline uppercase font-bold" style="text-decoration: underline;">Remove</a>
                                         </div>
                                     </div>
                                 @empty
@@ -134,7 +134,7 @@
                             </form>
 
                             <div class="flex justify-center mt-4">
-                                <a href="{{ route('pos.clear') }}" class="text-xs text-gray-400 hover:text-red-500 transition-colors uppercase font-bold tracking-tighter">
+                                <a href="{{ route('pos.clear') }}" class="text-xs text-gray-400 hover:text-red-500 transition-colors uppercase font-bold tracking-tighter" style="text-decoration: underline;">
                                     Cancel & Clear Cart
                                 </a>
                             </div>

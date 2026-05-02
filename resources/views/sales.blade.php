@@ -34,7 +34,7 @@
                                         {{ \Carbon\Carbon::parse($sale->sale_date)->format('M d, Y') }}
                                     </td>
                                     <td class="px-4 py-4 font-medium text-gray-900 dark:text-white">
-                                        {{ $sale->customer_name }}
+                                        {{ $sale->customer_name ?? 'Walk-in' }}
                                     </td>
                                     <td class="px-4 py-4">{{ $sale->employee_name }}</td>
                                     <td class="px-4 py-4 font-semibold text-gray-900 dark:text-white">
