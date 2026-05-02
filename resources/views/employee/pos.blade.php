@@ -108,8 +108,8 @@
                                     <label class="text-xs font-bold text-gray-500 uppercase">Customer</label>
                                     <select name="customer_id" class="w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow-sm">
                                         <option value="">Walk-in Customer</option>
-                                        @foreach($customers ?? [] as $customer)
-                                            <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                        @foreach($customers as $customer)
+                                            <option value="{{ $customer->user_id }}">{{ $customer->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

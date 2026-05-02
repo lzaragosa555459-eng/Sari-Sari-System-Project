@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('customer_id')->constrained('users')->onDelete('restrict');
+            $table->foreignId('customer_id')
+                ->nullable()
+                ->constrained('customers')
+                ->nullOnDelete();
             $table->foreignId('employee_id')->constrained('users')->onDelete('restrict');
             $table->date('sale_date');
             $table->decimal('total_amount', 10, 2);

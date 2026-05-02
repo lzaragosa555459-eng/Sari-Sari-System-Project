@@ -22,6 +22,7 @@ class HistoryController extends Controller
             FROM sales s
             LEFT JOIN customers c ON c.id = s.customer_id
             LEFT JOIN users u ON u.id = c.user_id
+            WHERE DATE(sale_date) = CURDATE()
             ORDER BY s.created_at DESC
         ");
 

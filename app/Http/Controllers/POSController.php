@@ -16,10 +16,14 @@ class PosController extends Controller
             FROM products p
             LEFT JOIN inventory i ON i.product_id = p.id
         ");
+        $customers = DB::select("
+            SELECT u.id as user_id, u.name FROM users u
+            JOIN customers c ON u.id = c.user_id
+        ");
 
         $cart = Session::get('cart', []);
 
-        return view('employee.pos', compact('products', 'cart'));
+        return view('employee.pos', compact('products', 'cart', 'customers'));
     }
 
     // ➕ Add to cart
@@ -85,7 +89,7 @@ class PosController extends Controller
             INSERT INTO sales (customer_id, employee_id, sale_date, total_amount, amount_paid, `change`, payment_method, created_at, updated_at)
             VALUES (?, ?, CURDATE(), ?, ?, ?, ?, NOW(), NOW())
         ", [
-            $request->customer_id ?? 1,
+            $request->customer_id ?? null,
             auth()->id(),
             $total,
             $request->amount_paid ?? $total,

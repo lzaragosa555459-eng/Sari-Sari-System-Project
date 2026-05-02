@@ -7,8 +7,8 @@
                 <div class="shrink-0 flex items-center text-align-center justify-content-start">
                     <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                        <h2 class="ms-3 text-white">Admin Portal</h2>
                     </a>
+                     <h2 class="ms-3 text-white">Admin Portal</h2>
                 </div>
 
                 <!-- Navigation Links -->
