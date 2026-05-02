@@ -27,5 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
 
 });
-
+Route::middleware(['auth', 'role:1'])->group(function () {
+    Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+});
 require __DIR__.'/auth.php';

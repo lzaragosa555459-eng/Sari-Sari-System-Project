@@ -16,14 +16,14 @@ class InventorySeeder extends Seeder
         DB::table('inventory')->insert([
             [
                 'product_id' => 1,
-                'quantity_on_hand' => 50,
+                'quantity_on_hand' => 45, // 50 - 5
                 'reorder_level' => 10,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'product_id' => 2,
-                'quantity_on_hand' => 100,
+                'quantity_on_hand' => 27, // 30 - 3
                 'reorder_level' => 20,
                 'created_at' => now(),
                 'updated_at' => now(),
