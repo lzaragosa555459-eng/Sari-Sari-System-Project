@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('pos')" :active="request()->routeIs('employee.pos')">
                         POS
                     </x-nav-link>
+                    <x-nav-link :href="route('history')" :active="request()->routeIs('employee.history')">
+                        Sales History
+                    </x-nav-link>
                 </div>
             </div>
 

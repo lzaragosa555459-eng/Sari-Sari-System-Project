@@ -8,7 +8,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PosController;
+use Illuminate\Support\Facades\DB;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,6 +44,50 @@ Route::middleware(['auth', 'role:2'])->group(function () {
     Route::get('/employee-pos/remove/{id}', [PosController::class, 'removeItem'])->name('pos.remove');
 
     Route::get('/employee-pos/clear', [PosController::class, 'clearCart'])->name('pos.clear');
+
+    Route::get('/employee/hsitory', 
+        [HistoryController::class, 'index']
+    )->name('history');
+
+    Route::get('/employee/transactions/{id}', 
+        [HistoryController::class, 'show']
+    )->name('employee.transactions.show');
+
+    Route::middleware(['auth', 'role:2'])->group(function () {
+
+        Route::get('/employee/transactions', 
+            [HistoryController::class, 'index']
+        )->name('employee.transactions');
+
+        // ✅ STEP 3 GOES HERE
+        Route::get('/employee/receipt-data/{id}', function ($id) {
+
+            $sale = DB::selectOne("
+                SELECT s.*, u.name AS customer_name
+                FROM sales s
+                LEFT JOIN customers c ON c.id = s.customer_id
+                LEFT JOIN users u ON u.id = c.user_id
+                WHERE s.id = ?
+            ", [$id]);
+
+            $items = DB::select("
+                SELECT 
+                    p.product_name,
+                    sd.quantity,
+                    (sd.quantity * p.price) AS subtotal
+                FROM sale_details sd
+                JOIN products p ON p.id = sd.product_id
+                WHERE sd.sale_id = ?
+            ", [$id]);
+
+            return response()->json([
+                'sale' => $sale,
+                'items' => $items
+            ]);
+
+        });
+
+    });
 });
 
 require __DIR__.'/auth.php';
