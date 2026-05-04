@@ -89,5 +89,8 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 
     });
 });
+Route::middleware(['auth', 'role:3'])->group(function () {
+    Route::get('/admin/dashboard', [DashboardController::class, 'customer_index'])->name('customer-dashboard');
 
+});
 require __DIR__.'/auth.php';

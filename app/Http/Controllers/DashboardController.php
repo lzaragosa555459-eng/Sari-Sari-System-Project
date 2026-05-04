@@ -113,4 +113,7 @@ class DashboardController extends Controller
 
          return view('employee.dashboard', compact('todaySales', 'todayTransactions', 'recentSales', 'lowStock', 'cashSales'));
     }
+    public function customer_index(){
+        return view('customer.dashboard');
+    }
 }
