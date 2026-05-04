@@ -93,6 +93,8 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 Route::middleware(['auth', 'role:3'])->group(function () {
     Route::get('/customer/dashboard', [DashboardController::class, 'customer_index'])->name('customer-dashboard');
     Route::get('/customer/order', [OrderController::class, 'index'])->name('order');
+    Route::get('/customer/cart', [CartController::class, 'index'])
+    ->name('customer.cart.index');
     Route::post('/customer/cart', [CartController::class, 'store'])
     ->name('customer.cart.store');
     Route::get('/customr/history', [HistoryController::class, 'history_customer'])->name('customer-history');
