@@ -11,7 +11,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PosController;
 use Illuminate\Support\Facades\DB;
-
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -90,7 +91,11 @@ Route::middleware(['auth', 'role:2'])->group(function () {
     });
 });
 Route::middleware(['auth', 'role:3'])->group(function () {
-    Route::get('/admin/dashboard', [DashboardController::class, 'customer_index'])->name('customer-dashboard');
+    Route::get('/customer/dashboard', [DashboardController::class, 'customer_index'])->name('customer-dashboard');
+    Route::get('/customer/order', [OrderController::class, 'index'])->name('order');
+    Route::post('/customer/cart', [CartController::class, 'store'])
+    ->name('customer.cart.store');
+    Route::get('/customr/history', [HistoryController::class, 'history_customer'])->name('customer-history');
 
 });
 require __DIR__.'/auth.php';

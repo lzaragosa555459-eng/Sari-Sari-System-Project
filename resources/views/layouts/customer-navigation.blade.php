@@ -15,6 +15,12 @@
                     <x-nav-link :href="route('customer-dashboard')" :active="request()->routeIs('customer.dashboard')">
                         Dashboard
                     </x-nav-link>
+                    <x-nav-link :href="route('order')" :active="request()->routeIs('customer.order')">
+                        Order
+                    </x-nav-link>
+                    <x-nav-link :href="route('customer-history')" :active="request()->routeIs('customer.history')">
+                        History
+                    </x-nav-link>
                 </div>
             </div>
 

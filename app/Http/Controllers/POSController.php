@@ -134,4 +134,5 @@ class PosController extends Controller
         Session::forget('cart');
         return back();
     }
+
 }

@@ -55,4 +55,9 @@ class HistoryController extends Controller
 
         return view('employee.receipt', compact('sale', 'items'));
     }
+
+    public function history_customer(){
+        
+        return view('customer.history');
+    }
 }
