@@ -11,7 +11,7 @@ class StockInSeeder extends Seeder
     {
         DB::table('stock_in')->insert([
             [
-                'product_id' => 1,
+                'inventory_id' => 1,
                 'quantity' => 50,
                 'received_date' => now(),
                 'reference_type' => 'restock',
@@ -20,7 +20,7 @@ class StockInSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'product_id' => 2,
+                'inventory_id' => 2,
                 'quantity' => 30,
                 'received_date' => now(),
                 'reference_type' => 'restock',

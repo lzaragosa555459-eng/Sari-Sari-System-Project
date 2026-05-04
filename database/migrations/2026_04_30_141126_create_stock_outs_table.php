@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('stock_out', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')
-                ->constrained('products')
+            $table->foreignId('inventory_id')
+                ->constrained('inventory')
                 ->onDelete('cascade');
             $table->integer('quantity');
             $table->string('reason')->nullable(); 

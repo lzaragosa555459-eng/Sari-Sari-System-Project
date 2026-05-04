@@ -35,18 +35,18 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CustomerSeeder::class,
             EmployeeSeeder::class,
-            SaleSeeder::class,
+            
             BrandSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
-            SaleDetailSeeder::class,
+            //SaleDetailSeeder::class,
             SupplierSeeder::class,
-            CreditSeeder::class,
+           
             SupplierProductSeeder::class,
-            CreditPaymentSeeder::class,
+           
+            InventorySeeder::class,
             StockInSeeder::class,
             StockOutSeeder::class,
-            InventorySeeder::class,
         ]);
     }
 }

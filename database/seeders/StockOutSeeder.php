@@ -11,7 +11,7 @@ class StockOutSeeder extends Seeder
     {
         DB::table('stock_out')->insert([
             [
-                'product_id' => 1,
+                'inventory_id' => 1,
                 'quantity' => 5,
                 'reason' => 'Sold',
                 'transaction_date' => now(),
@@ -21,7 +21,7 @@ class StockOutSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'product_id' => 2,  
+                'inventory_id' => 2,  
                 'quantity' => 3,
                 'reason' => 'Sold',
                 'transaction_date' => now(),

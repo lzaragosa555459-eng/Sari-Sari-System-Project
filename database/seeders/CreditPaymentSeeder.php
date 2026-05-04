@@ -19,7 +19,7 @@ class CreditPaymentSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'credit_id' => 1,
+                'credit_id' => 2,
                 'amount_paid' => 30.00,
                 'payment_date' => now()->subDays(1)->toDateString(),
                 'method' => 'GCash',
@@ -27,8 +27,8 @@ class CreditPaymentSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'credit_id' => 2,
-                'amount_paid' => 100.00,
+                'credit_id' => 3,
+                'amount_paid' => 10.00,
                 'payment_date' => now()->subDays(2)->toDateString(),
                 'method' => 'cash',
                 'created_at' => now(),

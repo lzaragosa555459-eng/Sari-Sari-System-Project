@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('sale_id')->nullable()->constrained('sales')->onDelete('set null');
             $table->decimal('balance', 10, 2);
             $table->date('due_date');
+            $table->enum('status', ['paid', 'unpaid', 'partial']);
             $table->timestamps();
         });
     }

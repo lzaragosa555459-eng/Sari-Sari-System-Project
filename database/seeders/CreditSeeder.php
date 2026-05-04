@@ -12,23 +12,27 @@ class CreditSeeder extends Seeder
         DB::table('credits')->insert([
             [
                 'sale_id' => 2,
-                'balance' => 70,
+                'balance' => 45,
                 'due_date' => now()->addDays(7),
+                'status' => 'partial',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'sale_id' => 4,
-                'balance' => 100,
+                'balance' => 270,
                 'due_date' => now()->addDays(5),
+                'status' => 'partial',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'sale_id' => 5,
-                'balance' => 80,
+                'balance' => 50,
                 'due_date' => now()->subDays(2),
-            ],
-            [
-                'sale_id' => 4,
-                'balance' => 300,
-                'due_date' => now()->addDays(10),
+                'status' => 'partial',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
     }
