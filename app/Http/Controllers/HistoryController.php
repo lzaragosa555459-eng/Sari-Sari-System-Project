@@ -57,7 +57,25 @@ class HistoryController extends Controller
     }
 
     public function history_customer(){
-        
-        return view('customer.history');
+
+        $sales = DB::table('sales')
+                ->where('customer_id', auth()->id())
+                ->get();
+
+            $paidCount = DB::table('sales')
+                ->where('customer_id', auth()->id())
+                ->where('payment_method', 'cash')
+                ->count();
+
+            $creditCount = DB::table('sales')
+                ->where('customer_id', auth()->id())
+                ->where('payment_method', 'credit')
+                ->count();
+
+            return view('customer.history', compact(
+                'sales',
+                'paidCount',
+                'creditCount'
+            ));
     }
 }
