@@ -25,6 +25,14 @@
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter mt-1">
                         {{ $sale->payment_method }}
                     </p>
+                    <div class="mt-3 text-xs text-gray-500 space-y-1">
+                        @foreach($items[$sale->id] ?? [] as $item)
+                            <div class="flex justify-between">
+                                <span>{{ $item->product_name }} x{{ $item->quantity }}</span>
+                                <span>₱{{ number_format($item->subtotal, 2) }}</span>
+                            </div>
+                        @endforeach
+                    </div>
 
                     <button 
                         onclick="openReceipt({{ $sale->id }})"

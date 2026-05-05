@@ -10,23 +10,31 @@ class HistoryController extends Controller
     // 📋 Show all sales history (employee view)
     public function index()
     {
-        $sales = DB::select("
-            SELECT 
-                s.id,
-                s.total_amount,
-                s.amount_paid,
-                s.change,
-                s.payment_method,
-                s.created_at,
-                u.name AS customer_name
-            FROM sales s
-            LEFT JOIN customers c ON c.id = s.customer_id
-            LEFT JOIN users u ON u.id = c.user_id
-            WHERE DATE(sale_date) = CURDATE()
-            ORDER BY s.created_at DESC
-        ");
+        $sales = DB::table('sales as s')
+            ->leftJoin('customers as c', 'c.id', '=', 's.customer_id')
+            ->leftJoin('users as u', 'u.id', '=', 'c.user_id')
+            ->select(
+                's.id',
+                's.total_amount',
+                's.payment_method',
+                's.sale_date',
+                'u.name as customer_name'
+            )
+            ->orderBy('s.created_at', 'desc')
+            ->get();
 
-        return view('employee.history', compact('sales'));
+        $items = DB::table('sale_details as sd')
+            ->join('products as p', 'p.id', '=', 'sd.product_id')
+            ->select(
+                'sd.sale_id',
+                'p.product_name',
+                'sd.quantity',
+                DB::raw('(sd.quantity * p.price) as subtotal')
+            )
+            ->get()
+            ->groupBy('sale_id');
+
+        return view('employee.history', compact('sales', 'items'));
     }
 
     // 🔍 View single receipt / sale details
@@ -55,7 +63,7 @@ class HistoryController extends Controller
 
         return view('employee.receipt', compact('sale', 'items'));
     }
-
+    //customer history view
     public function history_customer(){
 
         $sales = DB::table('sales')

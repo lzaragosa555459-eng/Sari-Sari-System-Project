@@ -11,11 +11,7 @@ class CartController extends Controller
     {
         $cart = session()->get('cart', []);
 
-        $total = 0;
-
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
+        $total = collect($cart)->sum('subtotal');
 
         return view('customer.cart', compact('cart', 'total'));
     }
@@ -28,28 +24,29 @@ class CartController extends Controller
 
         $cart = session()->get('cart', []);
 
-        $productId = $request->product_id;
-
         $product = DB::table('products')
-            ->where('id', $productId)
+            ->where('id', $request->product_id)
             ->first();
 
-        // Safety check (VERY IMPORTANT)
         if (!$product) {
             return back()->with('error', 'Product not found.');
         }
 
-        // If already in cart → increase quantity
-        if (isset($cart[$productId])) {
-            $cart[$productId]['quantity'] += $request->quantity;
-        } else {
-            $cart[$productId] = [
+        $id = $product->id;
+
+        // GROUPING LOGIC (key part)
+        if (!isset($cart[$id])) {
+            $cart[$id] = [
                 'id' => $product->id,
                 'name' => $product->product_name,
                 'price' => $product->price,
-                'quantity' => $request->quantity,
+                'quantity' => 0,
+                'subtotal' => 0
             ];
         }
+
+        $cart[$id]['quantity'] += $request->quantity;
+        $cart[$id]['subtotal'] = $cart[$id]['price'] * $cart[$id]['quantity'];
 
         session()->put('cart', $cart);
 
@@ -83,4 +80,15 @@ class CartController extends Controller
 
         return redirect()->route('order')->with('success', 'Booking placed successfully!');
     }
-    }
+    public function clear(Request $request)
+        {
+            // Remove the cart and total from the session
+            $request->session()->forget('cart');
+            $request->session()->forget('total');
+
+            // Optional: If you use a specific session key like 'shopping_cart'
+            // session()->forget('shopping_cart');
+
+            return redirect()->route('order')->with('success', 'Order has been cancelled and cart is cleared.');
+        }
+}

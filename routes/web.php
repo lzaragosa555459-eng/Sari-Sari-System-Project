@@ -47,7 +47,7 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 
     Route::get('/employee-pos/clear', [PosController::class, 'clearCart'])->name('pos.clear');
 
-    Route::get('/employee/hsitory', 
+    Route::get('/employee/history', 
         [HistoryController::class, 'index']
     )->name('history');
 
@@ -105,7 +105,7 @@ Route::middleware(['auth', 'role:3'])->group(function () {
     ->name('customer.cart.store');
     Route::post('/customer/cart/checkout', [CartController::class, 'checkout'])
         ->name('customer.cart.checkout');
-    Route::get('/customr/history', [HistoryController::class, 'history_customer'])->name('customer-history');
-
+    Route::get('/customer/history', [HistoryController::class, 'history_customer'])->name('customer-history');
+    Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart-clear');
 });
 require __DIR__.'/auth.php';
