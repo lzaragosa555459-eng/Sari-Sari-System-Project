@@ -92,6 +92,8 @@ Route::middleware(['auth', 'role:2'])->group(function () {
     });
 
      Route::get('/employee-book', [BookController::class, 'index'])->name('book');
+    Route::post('/employee/bookings/{id}/checkout', [BookController::class, 'checkout'])
+            ->name('employee.bookings.checkout');
 });
 
 Route::middleware(['auth', 'role:3'])->group(function () {
@@ -101,6 +103,8 @@ Route::middleware(['auth', 'role:3'])->group(function () {
     ->name('customer.cart.index');
     Route::post('/customer/cart', [CartController::class, 'store'])
     ->name('customer.cart.store');
+    Route::post('/customer/cart/checkout', [CartController::class, 'checkout'])
+        ->name('customer.cart.checkout');
     Route::get('/customr/history', [HistoryController::class, 'history_customer'])->name('customer-history');
 
 });

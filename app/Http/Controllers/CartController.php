@@ -55,4 +55,32 @@ class CartController extends Controller
 
         return back()->with('success', 'Added to cart!');
     }
-}
+
+
+    public function checkout(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return back()->with('error', 'Cart is empty.');
+        }
+
+        $customerId = auth()->id();
+
+        foreach ($cart as $item) {
+            DB::table('bookings')->insert([
+                'customer_id' => $customerId,
+                'product_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'status' => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        // clear cart after saving
+        session()->forget('cart');
+
+        return redirect()->route('order')->with('success', 'Booking placed successfully!');
+    }
+    }

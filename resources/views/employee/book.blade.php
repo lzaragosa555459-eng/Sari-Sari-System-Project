@@ -16,7 +16,7 @@
 
                     <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700">
                         <tr>
-                            <th class="px-4 py-2">Sale ID</th>
+                            <th class="px-4 py-2">Booking ID</th>
                             <th class="px-4 py-2">Customer Name</th>
                             <th class="px-4 py-2">Contact</th>
                             <th class="px-4 py-2">Total Amount</th>
@@ -28,67 +28,72 @@
 
                     <tbody>
 
-                        @forelse($sales as $sale)
-                            <tr class="border-b dark:border-gray-700">
+                    @forelse($bookings as $booking)
+                    <tr class="border-b dark:border-gray-700">
 
-                                <td class="px-4 py-2">
-                                    {{ $sale->sale_id }}
-                                </td>
+                        <td class="px-4 py-2">
+                            {{ $booking->id }}
+                        </td>
 
-                                <td class="px-4 py-2">
-                                    {{ $sale->name }}
-                                </td>
+                        <td class="px-4 py-2">
+                            {{ $booking->customer_name }}
+                        </td>
 
-                                <td class="px-4 py-2">
-                                    {{ $sale->contact_number }}
-                                </td>
+                        <td class="px-4 py-2">
+                            {{ $booking->contact_number }}
+                        </td>
 
-                                <td class="px-4 py-2">
-                                    ₱{{ number_format($sale->total_amount, 2) }}
-                                </td>
+                        <td class="px-4 py-2">
+                            {{ $booking->product_name }}
+                        </td>
 
-                                <td class="px-4 py-2">
-                                    {{ ucfirst($sale->payment_method) }}
-                                </td>
+                        <td class="px-4 py-2">
+                            {{ $booking->quantity }}
+                        </td>
 
-                                {{-- STATUS --}}
-                                <td class="px-4 py-2">
-                                    <span class="px-2 py-1 rounded text-white 
-                                        {{ $sale->status ?? 'pending' == 'pending' ? 'bg-yellow-500' : 'bg-green-600' }}">
-                                        {{ ucfirst($sale->status ?? 'pending') }}
-                                    </span>
-                                </td>
+                        {{-- STATUS --}}
+                        <td class="px-4 py-2">
+                            @if($booking->status == 'pending')
+                                <span class="px-2 py-1 rounded bg-yellow-500 text-white">
+                                    Pending
+                                </span>
+                            @else
+                                <span class="px-2 py-1 rounded bg-green-600 text-white">
+                                    Completed
+                                </span>
+                            @endif
+                        </td>
 
-                                {{-- ACTION --}}
-                                <td class="px-4 py-2 text-center">
+                        {{-- ACTION --}}
+                        <td class="px-4 py-2 text-center">
 
-                                    @if(($sale->status ?? 'pending') == 'pending')
+                            @if($booking->status == 'pending')
 
-                                        <form action="{{ route('employee.sales.checkout', $sale->sale_id) }}" method="POST">
-                                            @csrf
+                                <form action="{{ route('employee.bookings.checkout', $booking->id) }}" method="POST">
+                                    @csrf
 
-                                            <button type="submit"
-                                                class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
-                                                Checkout
-                                            </button>
-                                        </form>
+                                    <button type="submit"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                                        Checkout
+                                    </button>
+                                </form>
 
-                                    @else
-                                        <span class="text-gray-400">Completed</span>
-                                    @endif
+                            @else
+                                <span class="text-gray-400">Done</span>
+                            @endif
 
-                                </td>
+                        </td>
 
-                            </tr>
-                        @empty
+                    </tr>
+                    @empty
 
-                            <tr>
-                                <td colspan="7" class="text-center py-6 text-gray-500">
-                                    No bookings found.
-                                </td>
-                            </tr>
+                    <tr>
+                        <td colspan="7" class="text-center py-6 text-gray-500">
+                            No bookings found.
+                        </td>
+                    </tr>
 
-                        @endforelse
+                    @endforelse
 
                     </tbody>
 

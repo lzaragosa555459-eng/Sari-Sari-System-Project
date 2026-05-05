@@ -10,6 +10,11 @@
                     </a>
                     <h2 class="ms-3 text-white">Employee Portal</h2>
                 </div>
+                @php
+                    $pendingSalesCount = \App\Models\Sale::whereNull('employee_id')
+                        ->whereNotNull('customer_id')
+                        ->count();
+                @endphp
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('employee-dashboard')" :active="request()->routeIs('employee.dashboard')">
@@ -22,7 +27,17 @@
                         Sales History
                     </x-nav-link>
                     <x-nav-link :href="route('book')" :active="request()->routeIs('employee.book')">
-                        Customer book
+
+                        <span class="flex items-center gap-2">
+                            Customer book
+
+                            @if($pendingSalesCount > 0)
+                                <span class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+                                    {{ $pendingSalesCount }}
+                                </span>
+                            @endif
+                        </span>
+
                     </x-nav-link>
                 </div>
             </div>

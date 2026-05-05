@@ -48,9 +48,14 @@
                             Total: ₱{{ number_format($total, 2) }}
                         </h3>
 
-                        <button class="mt-4 bg-green-600 text-white px-6 py-2 rounded">
-                            Checkout
-                        </button>
+                        <form action="{{ route('customer.cart.checkout') }}" method="POST">
+                            @csrf
+
+                            <button type="submit"
+                                class="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                                Checkout
+                            </button>
+                        </form>
                     </div>
 
                 </div>
