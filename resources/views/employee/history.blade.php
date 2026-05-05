@@ -1,7 +1,4 @@
 <x-employee-app-layout>
-
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -9,6 +6,9 @@
             </h2>
         </div>
     </x-slot>
+<div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
@@ -108,14 +108,22 @@ function openReceipt(id) {
                     </div>
                 `;
             });
-
+            
             html += `
                 </div>
+
                 <div class="border-t-2 border-dashed border-gray-200 dark:border-gray-700 my-4"></div>
 
-                <div class="flex justify-between text-lg font-black text-gray-900 dark:text-white">
-                    <span>Total</span>
-                    <span class="text-indigo-600">₱${total.toFixed(2)}</span>
+                <div class="space-y-1 text-sm">
+                    <div class="flex justify-between font-bold text-gray-900 dark:text-white">
+                        <span>Total</span>
+                        <span class="text-indigo-600">₱${total.toFixed(2)}</span>
+                    </div>
+
+                    <div class="flex justify-between font-bold text-gray-900 dark:text-white">
+                        <span>Change</span>
+                        <span class="text-green-600">₱${Number(data.sale.change).toFixed(2)}</span>
+                    </div>
                 </div>
             `;
 

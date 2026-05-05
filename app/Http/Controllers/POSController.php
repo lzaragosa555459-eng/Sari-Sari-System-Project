@@ -11,50 +11,90 @@ class PosController extends Controller
     // 📦 Load POS page (products + cart)
     public function index()
     {
-        $products = DB::select("
-            SELECT p.*, i.quantity_on_hand
-            FROM products p
-            LEFT JOIN inventory i ON i.product_id = p.id
-        ");
+        $cart = Session::get('cart', []);
+
+        $products = DB::table('products')
+            ->join('inventory', 'products.id', '=', 'inventory.product_id')
+            ->select('products.*', 'inventory.quantity_on_hand')
+            ->get()
+            ->map(function ($product) use ($cart) {
+
+                $cartQty = isset($cart[$product->id])
+                    ? $cart[$product->id]['quantity']
+                    : 0;
+
+                $product->available_stock = $product->quantity_on_hand - $cartQty;
+
+                return $product;
+            })
+            ->filter(function ($product) {
+                return $product->available_stock > 0;
+            })
+            ->values();
+
         $customers = DB::select("
             SELECT u.id as user_id, u.name FROM users u
             JOIN customers c ON u.id = c.user_id
         ");
 
-        $cart = Session::get('cart', []);
-
-        return view('employee.pos', compact('products', 'cart', 'customers'));
+        return view('employee.pos', [
+            'products' => $products,
+            'cart' => $cart,
+            'customers' => $customers
+        ]);
     }
 
     // ➕ Add to cart
     public function addToCart(Request $request)
     {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity'   => 'required|integer|min:1',
+        ]);
+
         $product = DB::selectOne("
-            SELECT * FROM products WHERE id = ?
+            SELECT p.*, i.quantity_on_hand
+            FROM products p
+            JOIN inventory i ON p.id = i.product_id
+            WHERE p.id = ?
         ", [$request->product_id]);
 
         if (!$product) {
-            return back();
+            return back()->with('error', 'Product not found.');
+        }
+
+        $qty = (int) $request->quantity;
+
+        if ($qty > $product->quantity_on_hand) {
+            return back()->with('error', 'Not enough stock available.');
         }
 
         $cart = Session::get('cart', []);
-
         $id = $product->id;
 
         if (isset($cart[$id])) {
-            $cart[$id]['quantity'] += 1;
+
+            $newQty = $cart[$id]['quantity'] + $qty;
+
+            if ($newQty > $product->quantity_on_hand) {
+                return back()->with('error', 'Quantity exceeds available stock.');
+            }
+
+            $cart[$id]['quantity'] = $newQty;
+
         } else {
+
             $cart[$id] = [
-                'id' => $product->id,
-                'name' => $product->product_name,
-                'price' => $product->price,
-                'quantity' => 1,
+                'id'       => $product->id,
+                'name'     => $product->product_name,
+                'price'    => $product->price,
+                'quantity' => $qty,
             ];
         }
 
         Session::put('cart', $cart);
 
-        return back();
+        return back()->with('success', 'Added to cart.');
     }
 
     // ➖ Remove item
@@ -86,7 +126,11 @@ class PosController extends Controller
 
         // 1. Insert Sale
         DB::insert("
-            INSERT INTO sales (customer_id, employee_id, sale_date, total_amount, amount_paid, `change`, payment_method, created_at, updated_at)
+            INSERT INTO sales (
+                customer_id, employee_id, sale_date,
+                total_amount, amount_paid, `change`,
+                payment_method, created_at, updated_at
+            )
             VALUES (?, ?, CURDATE(), ?, ?, ?, ?, NOW(), NOW())
         ", [
             $request->customer_id ?? null,
@@ -99,7 +143,22 @@ class PosController extends Controller
 
         $saleId = DB::getPdo()->lastInsertId();
 
-        // 2. Insert Sale Details + Deduct Inventory
+        Session::forget('cart');
+        $vatRate = 0.12;
+        $vat = $total * $vatRate;
+        $grandTotal = $total + $vat;
+        $amountPaid = $request->amount_paid ?? $grandTotal;
+        $change = $amountPaid - $grandTotal;
+
+        Session::put('receipt', [
+            'items' => $cart,
+            'subtotal' => $total,
+            'vat' => $vat,
+            'total' => $grandTotal,
+            'paid' => $amountPaid,
+            'change' => $change,
+        ]);
+        // 2. Insert Sale Details + Deduct Inventory + Stock Out
         foreach ($cart as $item) {
 
             DB::insert("
@@ -111,7 +170,6 @@ class PosController extends Controller
                 $item['quantity'],
             ]);
 
-            // deduct inventory
             DB::update("
                 UPDATE inventory
                 SET quantity_on_hand = quantity_on_hand - ?
@@ -120,12 +178,35 @@ class PosController extends Controller
                 $item['quantity'],
                 $item['id']
             ]);
+
+            // Get inventory id for stock_out
+            $inventory = DB::selectOne("
+                SELECT id FROM inventory
+                WHERE product_id = ?
+            ", [$item['id']]);
+
+            DB::insert("
+                INSERT INTO stock_out (
+                    inventory_id,
+                    quantity,
+                    reason,
+                    transaction_date,
+                    reference_type,
+                    reference_id,
+                    created_at,
+                    updated_at
+                )
+                VALUES (?, ?, ?, CURDATE(), ?, ?, NOW(), NOW())
+            ", [
+                $inventory->id,
+                $item['quantity'],
+                'sold',
+                'sale',
+                $saleId
+            ]);
         }
 
-        // 3. Clear cart
-        Session::forget('cart');
-
-        return redirect()->back()->with('success', 'Sale completed!');
+        return redirect()->back()->with('showReceipt', true);
     }
 
     // 🧹 Clear cart

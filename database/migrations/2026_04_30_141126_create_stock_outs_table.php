@@ -17,7 +17,16 @@ return new class extends Migration
                 ->constrained('inventory')
                 ->onDelete('cascade');
             $table->integer('quantity');
-            $table->string('reason')->nullable(); 
+            $table->enum('reason', [
+                'sold',
+                'damaged',
+                'expired',
+                'returned_to_supplier',
+                'adjustment',
+                'lost',
+                'theft',
+                'transfer_out'
+            ])->default('sold');
             $table->date('transaction_date');
             $table->enum('reference_type', ['sale','damage','adjustment']);
             $table->unsignedBigInteger('reference_id')->nullable();

@@ -18,6 +18,7 @@ class HistoryController extends Controller
                 's.total_amount',
                 's.payment_method',
                 's.sale_date',
+                's.change',
                 'u.name as customer_name'
             )
             ->orderBy('s.created_at', 'desc')

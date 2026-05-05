@@ -15,7 +15,7 @@ use Illuminate\View\View;
 use App\Models\Customer;
 class RegisteredUserController extends Controller
 {
-    /**
+    /**`
      * Display the registration view.
      */
     public function create(): View

@@ -40,14 +40,25 @@
                                         <p class="text-indigo-600 dark:text-indigo-400 font-semibold">
                                             ₱{{ number_format($product->price, 2) }}
                                         </p>
-                                        <p class="text-[10px] text-gray-400 uppercase mt-1">Stock: {{ $product->quantity_on_hand }}</p>
+                                        <p class="text-[10px] text-gray-400 uppercase mt-1">Stock: {{ $product->available_stock }}</p>
                                     </div>
 
-                                    <form method="POST" action="{{ route('pos.add') }}">
+                                    <form method="POST" action="{{ route('pos.add') }}" class="flex items-center gap-2">
                                         @csrf
+
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg shadow-md transition-all active:scale-95">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+
+                                        <input
+                                            type="number"
+                                            name="quantity"
+                                            min="1"
+                                            max="{{ $product->quantity_on_hand }}"
+                                            value="1"
+                                            class="w-20 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 text-sm"
+                                        >
+
+                                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg shadow-md transition-all active:scale-95">
+                                            Add
                                         </button>
                                     </form>
                                 </div>
@@ -142,4 +153,74 @@
             </div>
         </div>
     </div>
+@if(session('showReceipt'))
+<div id="receiptModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div class="bg-white dark:bg-gray-800 w-[420px] rounded-xl shadow-xl p-6">
+
+        <div class="text-center border-b pb-3 mb-4">
+            <h2 class="text-xl font-black text-indigo-600">RECEIPT</h2>
+            <p class="text-xs text-gray-500">Transaction Summary</p>
+        </div>
+
+        {{-- ITEMS --}}
+        <div class="space-y-2 max-h-48 overflow-y-auto text-sm">
+            @foreach(session('receipt.items') as $item)
+                <div class="flex justify-between">
+                    <span>{{ $item['name'] }} x{{ $item['quantity'] }}</span>
+                    <span>₱{{ number_format($item['price'] * $item['quantity'], 2) }}</span>
+                </div>
+            @endforeach
+        </div>
+
+        <hr class="my-3">
+
+        {{-- SUMMARY --}}
+        <div class="text-sm space-y-1">
+            <div class="flex justify-between">
+                <span>Subtotal</span>
+                <span>₱{{ number_format(session('receipt.subtotal'), 2) }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span>VAT (12%)</span>
+                <span>₱{{ number_format(session('receipt.vat'), 2) }}</span>
+            </div>
+
+            <div class="flex justify-between font-bold">
+                <span>Total</span>
+                <span>₱{{ number_format(session('receipt.total'), 2) }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span>Paid</span>
+                <span>₱{{ number_format(session('receipt.paid'), 2) }}</span>
+            </div>
+
+            <div class="flex justify-between text-green-600 font-bold">
+                <span>Change</span>
+                <span>₱{{ number_format(session('receipt.change'), 2) }}</span>
+            </div>
+        </div>
+
+        {{-- BUTTONS --}}
+        <div class="mt-5 flex gap-2">
+            <button onclick="window.print()" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
+                Print
+            </button>
+
+            <button onclick="closeReceipt()" class="w-full bg-gray-300 dark:bg-gray-700 py-2 rounded-lg font-bold">
+                Close
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function closeReceipt() {
+    document.getElementById('receiptModal').remove();
+}
+</script>
+@endif
 </x-employee-app-layout>
