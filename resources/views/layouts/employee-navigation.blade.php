@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('history')" :active="request()->routeIs('employee.history')">
                         Sales History
                     </x-nav-link>
+                    <x-nav-link :href="route('book')" :active="request()->routeIs('employee.book')">
+                        Customer book
+                    </x-nav-link>
                 </div>
             </div>
 

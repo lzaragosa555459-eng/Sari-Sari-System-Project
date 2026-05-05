@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-
+use App\Models\Customer;
 class RegisteredUserController extends Controller
 {
     /**
@@ -32,8 +32,10 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'contact_number' => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string'],
         ]);
 
         $user = User::create([
@@ -41,6 +43,12 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => 3,
+        ]);
+
+        Customer::create([
+            'user_id' => $user->id,
+            'contact_number' => $request->contact_number,
+            'address' => $request->address,
         ]);
 
         event(new Registered($user));

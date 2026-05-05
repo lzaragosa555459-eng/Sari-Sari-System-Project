@@ -13,6 +13,7 @@ use App\Http\Controllers\PosController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BookController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,7 +90,10 @@ Route::middleware(['auth', 'role:2'])->group(function () {
         });
 
     });
+
+     Route::get('/employee-book', [BookController::class, 'index'])->name('book');
 });
+
 Route::middleware(['auth', 'role:3'])->group(function () {
     Route::get('/customer/dashboard', [DashboardController::class, 'customer_index'])->name('customer-dashboard');
     Route::get('/customer/order', [OrderController::class, 'index'])->name('order');
