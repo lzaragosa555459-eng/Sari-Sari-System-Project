@@ -11,8 +11,7 @@
                     <h2 class="ms-3 text-white">Employee Portal</h2>
                 </div>
                 @php
-                    $pendingSalesCount = \App\Models\Sale::whereNull('employee_id')
-                        ->whereNotNull('customer_id')
+                    $pendingBookingsCount = \App\Models\Booking::where('status', 'pending')
                         ->count();
                 @endphp
                 <!-- Navigation Links -->
@@ -31,9 +30,9 @@
                         <span class="flex items-center gap-2">
                             Customer book
 
-                            @if($pendingSalesCount > 0)
+                            @if($pendingBookingsCount > 0)
                                 <span class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
-                                    {{ $pendingSalesCount }}
+                                    {{ $pendingBookingsCount }}
                                 </span>
                             @endif
                         </span>

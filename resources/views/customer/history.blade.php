@@ -78,7 +78,7 @@
                                             <span class="font-bold text-gray-900 dark:text-white">#{{ $sale->id }}</span>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                            {{ $sale->created_at->format('M d, Y') }}
+                                            {{ \Carbon\Carbon::parse($sale->created_at)->format('M d, Y') }}
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($sale->total_amount, 2) }}</span>
