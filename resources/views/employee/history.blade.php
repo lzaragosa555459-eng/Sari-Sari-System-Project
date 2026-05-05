@@ -2,10 +2,13 @@
 
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-        <h2 class="text-2xl font-black mb-8 text-gray-800 dark:text-white tracking-tight">
-            Transaction History
-        </h2>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('Transaction History') }}
+            </h2>
+        </div>
+    </x-slot>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 

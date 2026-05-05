@@ -20,13 +20,13 @@
                         {{ __('Inventory') }}
                     </x-nav-link>
                     <x-nav-link :href="url('/sales')" :active="request()->is('sales')">
-                        {{ __('sales') }}
+                        {{ __('Sales') }}
                     </x-nav-link>
                     <x-nav-link :href="url('/credits')" :active="request()->is('credits')">
-                        {{ __('credits') }}
+                        {{ __('Credits') }}
                     </x-nav-link>
                     <x-nav-link :href="url('/customers')" :active="request()->is('customers')">
-                        {{ __('customers') }}
+                        {{ __('Customers') }}
                     </x-nav-link>
                 </div>
             </div>
