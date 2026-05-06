@@ -65,26 +65,42 @@ class HistoryController extends Controller
         return view('employee.receipt', compact('sale', 'items'));
     }
     //customer history view
-    public function history_customer(){
+    public function history_customer()
+    {
+        $customer = DB::selectOne("
+            SELECT id
+            FROM customers
+            WHERE user_id = ?
+        ", [auth()->id()]);
 
-        $sales = DB::table('sales')
-                ->where('customer_id', auth()->id())
-                ->get();
+        $sales = DB::select("
+            SELECT
+                s.*,
+                eu.name AS employee_name
+            FROM sales s
+            LEFT JOIN users eu ON eu.id = s.employee_id
+            WHERE s.customer_id = ?
+            ORDER BY s.created_at DESC
+        ", [$customer->id]);
 
-            $paidCount = DB::table('sales')
-                ->where('customer_id', auth()->id())
-                ->where('payment_method', 'cash')
-                ->count();
+        $paidCount = DB::selectOne("
+            SELECT COUNT(*) AS total
+            FROM sales
+            WHERE customer_id = ?
+            AND payment_method = 'cash'
+        ", [$customer->id]);
 
-            $creditCount = DB::table('sales')
-                ->where('customer_id', auth()->id())
-                ->where('payment_method', 'credit')
-                ->count();
+        $creditCount = DB::selectOne("
+            SELECT COUNT(*) AS total
+            FROM sales
+            WHERE customer_id = ?
+            AND payment_method = 'credit'
+        ", [$customer->id]);
 
-            return view('customer.history', compact(
-                'sales',
-                'paidCount',
-                'creditCount'
-            ));
+        return view('customer.history', [
+            'sales' => $sales,
+            'paidCount' => $paidCount->total,
+            'creditCount' => $creditCount->total,
+        ]);
     }
 }

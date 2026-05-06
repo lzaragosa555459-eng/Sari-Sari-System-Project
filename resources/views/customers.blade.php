@@ -23,7 +23,6 @@
                                     <th class="px-6 py-4">Email Address</th>
                                     <th class="px-6 py-4">Contact Number</th>
                                     <th class="px-6 py-4">Address</th>
-                                    <th class="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -52,9 +51,6 @@
                                     </td>
                                     <td class="px-6 py-4 truncate max-w-xs">
                                         {{ $customer->address }}
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <a href="#" class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Edit</a>
                                     </td>
                                 </tr>
                                 @endforeach

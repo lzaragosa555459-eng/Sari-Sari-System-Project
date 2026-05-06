@@ -65,6 +65,7 @@
                                 <tr class="bg-gray-50/50 dark:bg-gray-900/30">
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Transaction</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Employee</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Method</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
@@ -79,6 +80,9 @@
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                             {{ \Carbon\Carbon::parse($sale->created_at)->format('M d, Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                                            {{ $sale->employee_name }}
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($sale->total_amount, 2) }}</span>

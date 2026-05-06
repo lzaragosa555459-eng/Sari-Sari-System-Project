@@ -42,6 +42,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
                     @foreach($products as $product)
+                        @if(($product->quantity_on_hand ?? 0) > 0)
                         <div class="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 transition-all hover:shadow-xl hover:-translate-y-1">
                             
                             {{-- Icon Placeholder (Like the Cart) --}}
@@ -87,6 +88,7 @@
                                 </form>
                             </div>
                         </div>
+                        @endif
                     @endforeach
 
                 </div>
