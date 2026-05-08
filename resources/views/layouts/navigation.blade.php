@@ -8,7 +8,7 @@
                     <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
-                     <h2 class="ms-3 text-white">Admin Portal</h2>
+                     <h2 class="ms-3 text-blue-500 text-4xl font-bold font-sans">ADMIN PORTAL</h2>
                 </div>
 
                 <!-- Navigation Links -->
