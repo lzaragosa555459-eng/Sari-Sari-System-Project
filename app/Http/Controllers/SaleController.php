@@ -20,8 +20,18 @@ class SaleController extends Controller
             )
             ->orderBy('s.created_at', 'desc')
             ->paginate(6);
+        $items = DB::table('sale_details as sd')
+            ->join('products as p', 'p.id', '=', 'sd.product_id')
+            ->select(
+                'sd.sale_id',
+                'p.product_name',
+                'sd.quantity',
+                DB::raw('(sd.quantity * p.price) as subtotal')
+            )
+            ->get()
+            ->groupBy('sale_id');
 
-        return view('sales', compact('sales'));
+        return view('sales', compact('sales', 'items'));
     }
 
 }

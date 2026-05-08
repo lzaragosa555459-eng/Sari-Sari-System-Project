@@ -52,10 +52,11 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 text-right">
-                                        <a href="/sales/{{ $sale->id }}" 
-                                           class="inline-flex items-center px-3 py-1.5 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                            View Items
-                                        </a>
+                                    <button type="button"
+                                        onclick="openItemsModal({{ $sale->id }})"
+                                        class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white rounded-md text-xs">
+                                        View Items
+                                    </button>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -70,4 +71,78 @@
             </div>
         </div>
     </div>
+<div id="itemsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeItemsModal()"></div>
+
+    <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-3xl shadow-2xl relative z-10 overflow-hidden transform transition-all">
+        
+        <div class="px-8 pt-8 pb-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-black text-gray-800 dark:text-white tracking-tight">Order Details</h2>
+                <p class="text-xs font-bold text-indigo-500 uppercase tracking-widest mt-1">Items Breakdown</p>
+            </div>
+            <button onclick="closeItemsModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="px-8 py-4">
+            <div id="itemsContainer" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <div class="flex flex-col items-center py-10 opacity-20">
+                    <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <p class="text-sm font-bold">Loading items...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-8 py-6 bg-gray-50 dark:bg-gray-700/30 mt-4 flex justify-between items-center">
+            <div class="text-xs text-gray-500 font-medium">
+                Please verify items before closing.
+            </div>
+            <button onclick="closeItemsModal()"
+                class="px-8 py-3 bg-gray-900 dark:bg-white dark:text-gray-900 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all active:scale-95">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Clean Scrollbar for the items list */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; }
+</style>
+<script>
+const saleItems = @json($items);
+function openItemsModal(saleId) {
+
+    let container = document.getElementById('itemsContainer');
+    container.innerHTML = '';
+
+    let items = saleItems[saleId] || [];
+
+    if (items.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">No items found.</p>';
+    } else {
+        items.forEach(item => {
+            container.innerHTML += `
+                <div class="flex justify-between border-b py-1">
+                    <span class="text-white">${item.product_name} ${item.quantity}x</span>
+                    <span class="text-white">₱${parseFloat(item.subtotal).toFixed(2)}</span>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('itemsModal').classList.remove('hidden');
+}
+
+function closeItemsModal() {
+    document.getElementById('itemsModal').classList.add('hidden');
+}
+</script>
 </x-app-layout>
