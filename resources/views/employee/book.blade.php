@@ -16,11 +16,9 @@
 
                     <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700">
                         <tr>
-                            <th class="px-4 py-2">Booking ID</th>
                             <th class="px-4 py-2">Customer Name</th>
                             <th class="px-4 py-2">Contact</th>
                             <th class="px-4 py-2">Total Amount</th>
-                            <th class="px-4 py-2">Payment</th>
                             <th class="px-4 py-2">Status</th>
                             <th class="px-4 py-2 text-center">Action</th>
                         </tr>
@@ -32,23 +30,23 @@
                     <tr class="border-b dark:border-gray-700">
 
                         <td class="px-4 py-2">
-                            {{ $booking->id }}
-                        </td>
-
-                        <td class="px-4 py-2">
                             {{ $booking->customer_name }}
                         </td>
 
                         <td class="px-4 py-2">
                             {{ $booking->contact_number }}
                         </td>
-
                         <td class="px-4 py-2">
-                            {{ $booking->product_name }}
-                        </td>
+                            @php
+                                $products = explode(',', $booking->products);
+                                $quantities = explode(',', $booking->quantities);
+                            @endphp
 
-                        <td class="px-4 py-2">
-                            {{ $booking->quantity }}
+                            @foreach($products as $index => $product)
+                                <div>
+                                    {{ trim($product) }} {{ $quantities[$index] ?? '' }}x
+                                </div>
+                            @endforeach
                         </td>
 
                         {{-- STATUS --}}
@@ -69,7 +67,7 @@
 
                             @if($booking->status == 'pending')
 
-                                <form action="{{ route('employee.bookings.checkout', $booking->id) }}" method="POST">
+                               <form action="{{ route('employee.bookings.checkout', $booking->customer_id) }}" method="POST">
                                     @csrf
 
                                     <button type="submit"

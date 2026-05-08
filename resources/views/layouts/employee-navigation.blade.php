@@ -11,8 +11,10 @@
                     <h2 class="ms-3 text-white">Employee Portal</h2>
                 </div>
                 @php
-                    $pendingBookingsCount = \App\Models\Booking::where('status', 'pending')
-                        ->count();
+                    $pendingBookingsCount = DB::table('bookings')
+                        ->where('status', 'pending')
+                        ->distinct('customer_id')
+                        ->count('customer_id');
                 @endphp
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
