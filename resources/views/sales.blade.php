@@ -63,8 +63,8 @@
                         </table>
                     </div>
                     
-                    <div class="mt-4">
-                        {{-- $sales->links() --}}
+                    <div class="d-flex justify-content-center mt-3">
+                         {{ $sales->links() }}
                     </div>
                 </div>
             </div>

@@ -8,18 +8,18 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = DB::select("
-            SELECT 
-                s.*,
-                u.name as customer_name,
-                u.email as customer_email,
-                emp.name as employee_name
-            FROM sales s
-            LEFT JOIN customers c ON s.customer_id = c.id
-            LEFT JOIN users u ON c.user_id = u.id
-            LEFT JOIN users emp ON s.employee_id = emp.id
-            ORDER BY s.sale_date DESC
-        ");
+        $sales = DB::table('sales as s')
+            ->leftJoin('customers as c', 's.customer_id', '=', 'c.id')
+            ->leftJoin('users as u', 'c.user_id', '=', 'u.id')
+            ->leftJoin('users as emp', 's.employee_id', '=', 'emp.id')
+            ->select(
+                's.*',
+                'u.name as customer_name',
+                'u.email as customer_email',
+                'emp.name as employee_name'
+            )
+            ->orderBy('s.created_at', 'desc')
+            ->paginate(6);
 
         return view('sales', compact('sales'));
     }
