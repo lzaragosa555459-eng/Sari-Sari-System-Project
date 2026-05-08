@@ -91,9 +91,9 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 
     });
 
-     Route::get('/employee-book', [BookController::class, 'index'])->name('book');
-    Route::post('/employee/bookings/{id}/checkout', [BookController::class, 'checkout'])
-            ->name('employee.bookings.checkout');
+    Route::get('/employee-book', [BookController::class, 'index'])->name('book');
+    Route::post('/employee/bookings/checkout/{customerId}', [BookController::class, 'checkout'])
+        ->name('employee.bookings.checkout');
 });
 
 Route::middleware(['auth', 'role:3'])->group(function () {

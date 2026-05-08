@@ -31,6 +31,7 @@ class BookController extends Controller
             'bookings.status',
             'bookings.created_at'
         )
+        ->orderBy('created_at','desc')
         ->get();
 
         return view('employee.book', compact('bookings'));
@@ -39,7 +40,7 @@ class BookController extends Controller
 
 
 
-    public function checkout($customerId)
+    public function checkout(Request $request, $customerId)
     {
         // 1. Get ALL pending bookings for this customer
         $bookings = DB::table('bookings')
@@ -64,20 +65,30 @@ class BookController extends Controller
             $total += $item->price * $item->quantity;
         }
 
-        // 3. CREATE SALE (ONE customer ONLY)
+        // 3. GET CASH INPUT (FROM MODAL)
+        $amountPaid = $request->amount_paid ?? 0;
+
+        // validation (important for POS)
+        if ($amountPaid < $total) {
+            return back()->with('error', 'Insufficient payment.');
+        }
+
+        $change = $amountPaid - $total;
+
+        // 4. CREATE SALE
         $saleId = DB::table('sales')->insertGetId([
             'customer_id' => $customerId,
             'employee_id' => auth()->id(),
             'sale_date' => now(),
             'total_amount' => $total,
-            'amount_paid' => $total,
-            'change' => 0,
+            'amount_paid' => $amountPaid,
+            'change' => $change,
             'payment_method' => 'cash',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // 4. CREATE SALE DETAILS (ALL PRODUCTS)
+        // 5. SALE DETAILS
         foreach ($bookings as $item) {
 
             DB::table('sale_details')->insert([
@@ -88,13 +99,13 @@ class BookController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // OPTIONAL: deduct inventory
+            // deduct inventory
             DB::table('inventory')
                 ->where('product_id', $item->product_id)
                 ->decrement('quantity_on_hand', $item->quantity);
         }
 
-        // 5. MARK ALL BOOKINGS AS COMPLETED
+        // 6. COMPLETE BOOKINGS
         DB::table('bookings')
             ->where('customer_id', $customerId)
             ->where('status', 'pending')
