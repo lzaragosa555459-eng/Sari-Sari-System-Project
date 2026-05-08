@@ -18,6 +18,8 @@
                         <tr>
                             <th class="px-4 py-2">Customer Name</th>
                             <th class="px-4 py-2">Contact</th>
+                            <th class="px-4 py-2">Date & Time</th>
+                            <th class="px-4 py-2">Products & Quantity</th>
                             <th class="px-4 py-2">Total Amount</th>
                             <th class="px-4 py-2">Status</th>
                             <th class="px-4 py-2 text-center">Action</th>
@@ -37,6 +39,9 @@
                             {{ $booking->contact_number }}
                         </td>
                         <td class="px-4 py-2">
+                           {{ \Carbon\Carbon::parse($booking->created_at)->format('M d, Y h:i A') }}
+                        </td>
+                        <td class="px-4 py-2">
                             @php
                                 $products = explode(',', $booking->products);
                                 $quantities = explode(',', $booking->quantities);
@@ -48,7 +53,9 @@
                                 </div>
                             @endforeach
                         </td>
-
+                        <td class="px-4 py-2">
+                            ₱{{ $booking->total}}
+                        </td>
                         {{-- STATUS --}}
                         <td class="px-4 py-2">
                             @if($booking->status == 'pending')

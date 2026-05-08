@@ -9,25 +9,29 @@ class BookController extends Controller
     public function index()
     {
         $bookings = DB::table('bookings')
-            ->join('users', 'users.id', '=', 'bookings.customer_id')
-            ->leftJoin('customers', 'customers.user_id', '=', 'users.id')
-            ->join('products', 'products.id', '=', 'bookings.product_id')
-            ->select(
-                'bookings.customer_id',
-                'users.name as customer_name',
-                'customers.contact_number',
-                'bookings.status',
+        ->join('users', 'users.id', '=', 'bookings.customer_id')
+        ->leftJoin('customers', 'customers.user_id', '=', 'users.id')
+        ->join('products', 'products.id', '=', 'bookings.product_id')
+        ->select(
+            'bookings.customer_id',
+            'users.name as customer_name',
+            'customers.contact_number',
+            'bookings.status',
+            'bookings.created_at',
 
-                DB::raw("GROUP_CONCAT(products.product_name SEPARATOR ', ') as products"),
-                DB::raw("GROUP_CONCAT(bookings.quantity SEPARATOR ', ') as quantities")
-            )
-            ->groupBy(
-                'bookings.customer_id',
-                'users.name',
-                'customers.contact_number',
-                'bookings.status'
-            )
-            ->get();
+            DB::raw('SUM(bookings.quantity * products.price) as total'),
+
+            DB::raw("GROUP_CONCAT(products.product_name SEPARATOR ', ') as products"),
+            DB::raw("GROUP_CONCAT(bookings.quantity SEPARATOR ', ') as quantities")
+        )
+        ->groupBy(
+            'bookings.customer_id',
+            'users.name',
+            'customers.contact_number',
+            'bookings.status',
+            'bookings.created_at'
+        )
+        ->get();
 
         return view('employee.book', compact('bookings'));
     }
@@ -35,22 +39,13 @@ class BookController extends Controller
 
 
 
-    public function checkout($id)
+    public function checkout($customerId)
     {
-        // 1. Get booking header (customer only)
-        $booking = DB::table('bookings')
-            ->where('id', $id)
-            ->first();
-
-        if (!$booking || $booking->status == 'completed') {
-            return back()->with('error', 'Invalid or already checked out booking.');
-        }
-
-        // 2. Get ALL items under this customer booking (IMPORTANT FIX)
-        $items = DB::table('bookings')
+        // 1. Get ALL pending bookings for this customer
+        $bookings = DB::table('bookings')
             ->join('products', 'products.id', '=', 'bookings.product_id')
-            ->where('bookings.customer_id', $booking->customer_id)
-            ->where('bookings.status', '!=', 'completed')
+            ->where('bookings.customer_id', $customerId)
+            ->where('bookings.status', 'pending')
             ->select(
                 'bookings.product_id',
                 'bookings.quantity',
@@ -58,20 +53,20 @@ class BookController extends Controller
             )
             ->get();
 
-        if ($items->isEmpty()) {
-            return back()->with('error', 'No items found.');
+        if ($bookings->isEmpty()) {
+            return back()->with('error', 'No pending bookings found.');
         }
 
-        // 3. Compute total
+        // 2. Compute total
         $total = 0;
 
-        foreach ($items as $item) {
+        foreach ($bookings as $item) {
             $total += $item->price * $item->quantity;
         }
 
-        // 4. CREATE SALE (ONE customer only)
+        // 3. CREATE SALE (ONE customer ONLY)
         $saleId = DB::table('sales')->insertGetId([
-            'customer_id' => $booking->customer_id,
+            'customer_id' => $customerId,
             'employee_id' => auth()->id(),
             'sale_date' => now(),
             'total_amount' => $total,
@@ -82,8 +77,8 @@ class BookController extends Controller
             'updated_at' => now(),
         ]);
 
-        // 5. CREATE SALE DETAILS (MANY PRODUCTS)
-        foreach ($items as $item) {
+        // 4. CREATE SALE DETAILS (ALL PRODUCTS)
+        foreach ($bookings as $item) {
 
             DB::table('sale_details')->insert([
                 'sale_id' => $saleId,
@@ -92,11 +87,17 @@ class BookController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            // OPTIONAL: deduct inventory
+            DB::table('inventory')
+                ->where('product_id', $item->product_id)
+                ->decrement('quantity_on_hand', $item->quantity);
         }
 
-        // 6. UPDATE BOOKING STATUS (ALL customer bookings)
+        // 5. MARK ALL BOOKINGS AS COMPLETED
         DB::table('bookings')
-            ->where('customer_id', $booking->customer_id)
+            ->where('customer_id', $customerId)
+            ->where('status', 'pending')
             ->update([
                 'status' => 'completed'
             ]);
