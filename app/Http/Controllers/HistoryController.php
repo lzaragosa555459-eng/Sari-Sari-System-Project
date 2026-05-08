@@ -19,10 +19,11 @@ class HistoryController extends Controller
                 's.payment_method',
                 's.sale_date',
                 's.change',
-                'u.name as customer_name'
+                'u.name as customer_name',
+                's.created_at'
             )
             ->orderBy('s.created_at', 'desc')
-            ->get();
+            ->paginate(6);
 
         $items = DB::table('sale_details as sd')
             ->join('products as p', 'p.id', '=', 'sd.product_id')

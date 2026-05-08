@@ -24,17 +24,28 @@ class CartController extends Controller
 
         $cart = session()->get('cart', []);
 
-        $product = DB::table('products')
-            ->where('id', $request->product_id)
-            ->first();
+        $product = DB::selectOne("
+            SELECT 
+                p.*,
+                i.quantity_on_hand
+            FROM products p
+            JOIN inventory i
+                ON p.id = i.product_id
+            WHERE p.id = ?
+        ", [$request->product_id]);
 
         if (!$product) {
             return back()->with('error', 'Product not found.');
         }
 
+        // CHECK STOCK
+        if ($request->quantity > $product->quantity_on_hand) {
+            return back()->with('error', 'Not enough stock available.');
+        }
+
         $id = $product->id;
 
-        // GROUPING LOGIC (key part)
+        // GROUPING LOGIC
         if (!isset($cart[$id])) {
             $cart[$id] = [
                 'id' => $product->id,
@@ -45,10 +56,25 @@ class CartController extends Controller
             ];
         }
 
+        // ADD TO CART
         $cart[$id]['quantity'] += $request->quantity;
-        $cart[$id]['subtotal'] = $cart[$id]['price'] * $cart[$id]['quantity'];
 
+        // UPDATE SUBTOTAL
+        $cart[$id]['subtotal'] =
+            $cart[$id]['price'] * $cart[$id]['quantity'];
+
+        // SAVE SESSION
         session()->put('cart', $cart);
+
+        // MINUS STOCK
+        DB::update("
+            UPDATE inventory
+            SET quantity_on_hand = quantity_on_hand - ?
+            WHERE product_id = ?
+        ", [
+            $request->quantity,
+            $product->id
+        ]);
 
         return back()->with('success', 'Added to cart!');
     }

@@ -154,68 +154,98 @@
         </div>
     </div>
 @if(session('showReceipt'))
-<div id="receiptModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+<div id="receiptModal" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gray-900 w-full max-w-[380px] rounded-3xl shadow-2xl overflow-hidden transform transition-all">
+        
+        <div class="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
 
-    <div class="bg-white dark:bg-gray-800 w-[420px] rounded-xl shadow-xl p-6">
-
-        <div class="text-center border-b pb-3 mb-4">
-            <h2 class="text-xl font-black text-indigo-600">RECEIPT</h2>
-            <p class="text-xs text-gray-500">Transaction Summary</p>
-        </div>
-
-        {{-- ITEMS --}}
-        <div class="space-y-2 max-h-48 overflow-y-auto text-sm">
-            @foreach(session('receipt.items') as $item)
-                <div class="flex justify-between">
-                    <span>{{ $item['name'] }} x{{ $item['quantity'] }}</span>
-                    <span>₱{{ number_format($item['price'] * $item['quantity'], 2) }}</span>
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-3">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                 </div>
-            @endforeach
+                <h2 class="text-2xl font-black text-gray-800 dark:text-white tracking-tight">Success!</h2>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mt-1">Transaction Completed</p>
+            </div>
+
+            <div class="flex justify-between items-end mb-6 pb-4 border-b border-dashed border-gray-200 dark:border-gray-700">
+                <div>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Date</p>
+                    <p class="text-xs font-mono text-gray-600 dark:text-gray-300">{{ now()->format('M d, Y • h:i A') }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Receipt #</p>
+                    <p class="text-xs font-mono text-gray-600 dark:text-gray-300">{{ rand(100000, 999999) }}</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-8 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                @foreach(session('receipt.items') as $item)
+                <div class="flex justify-between items-start text-sm">
+                    <div class="flex-1">
+                        <p class="font-bold text-gray-700 dark:text-gray-200 leading-tight">{{ $item['name'] }}</p>
+                        <p class="text-xs text-gray-400 font-mono">Qty: {{ $item['quantity'] }}</p>
+                    </div>
+                    <span class="font-mono font-bold text-gray-900 dark:text-white">
+                        ₱{{ number_format($item['price'] * $item['quantity'], 2) }}
+                    </span>
+                </div>
+                @endforeach
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 space-y-3">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>Subtotal</span>
+                    <span>₱{{ number_format(session('receipt.subtotal'), 2) }}</span>
+                </div>
+                <div class="pt-2 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <span class="text-sm font-black text-gray-800 dark:text-white uppercase">Total Amount</span>
+                    <span class="text-xl font-black text-indigo-600">₱{{ number_format(session('receipt.total'), 2) }}</span>
+                </div>
+            </div>
+
+            <div class="mt-4 px-2 space-y-1">
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-400">Cash Tendered</span>
+                    <span class="text-gray-600 dark:text-gray-400 font-mono">₱{{ number_format(session('receipt.paid'), 2) }}</span>
+                </div>
+                <div class="flex justify-between text-xs font-bold">
+                    <span class="text-gray-400">Change Due</span>
+                    <span class="text-green-600 font-mono tracking-tight">₱{{ number_format(session('receipt.change'), 2) }}</span>
+                </div>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-3 no-print">
+                <button onclick="window.print()" class="flex items-center justify-center gap-2 bg-gray-900 dark:bg-white dark:text-gray-900 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Print
+                </button>
+                <button onclick="closeReceipt()" class="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+                    Done
+                </button>
+            </div>
         </div>
 
-        <hr class="my-3">
-
-        {{-- SUMMARY --}}
-        <div class="text-sm space-y-1">
-            <div class="flex justify-between">
-                <span>Subtotal</span>
-                <span>₱{{ number_format(session('receipt.subtotal'), 2) }}</span>
-            </div>
-
-            <div class="flex justify-between">
-                <span>VAT (12%)</span>
-                <span>₱{{ number_format(session('receipt.vat'), 2) }}</span>
-            </div>
-
-            <div class="flex justify-between font-bold">
-                <span>Total</span>
-                <span>₱{{ number_format(session('receipt.total'), 2) }}</span>
-            </div>
-
-            <div class="flex justify-between">
-                <span>Paid</span>
-                <span>₱{{ number_format(session('receipt.paid'), 2) }}</span>
-            </div>
-
-            <div class="flex justify-between text-green-600 font-bold">
-                <span>Change</span>
-                <span>₱{{ number_format(session('receipt.change'), 2) }}</span>
-            </div>
+        <div class="flex justify-center no-print">
+            <div class="h-2 w-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAxMCIgZmlsbD0id2hpdGUiPjxwb2x5Z29uIHBvaW50cz0iMCwxMCA1LDAgMTAsMTAgMTUsMCAyMCwxMCIvPjwvc3ZnPg==')] bg-repeat-x bg-[length:20px_10px]"></div>
         </div>
-
-        {{-- BUTTONS --}}
-        <div class="mt-5 flex gap-2">
-            <button onclick="window.print()" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
-                Print
-            </button>
-
-            <button onclick="closeReceipt()" class="w-full bg-gray-300 dark:bg-gray-700 py-2 rounded-lg font-bold">
-                Close
-            </button>
-        </div>
-
     </div>
 </div>
+
+<style>
+    @media print {
+        .no-print { display: none !important; }
+        body * { visibility: hidden; }
+        #receiptModal, #receiptModal * { visibility: visible; }
+        #receiptModal { position: absolute; left: 0; top: 0; background: white !important; }
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+</style>
+
 
 <script>
 function closeReceipt() {

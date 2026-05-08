@@ -22,6 +22,7 @@ class OrderController extends Controller
         WHERE p.product_name LIKE ?
     ", ["%{$search}%"]);
 
+
         return view('customer.order', compact('products'));
     }
 }

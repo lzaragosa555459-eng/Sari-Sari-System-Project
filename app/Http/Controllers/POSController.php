@@ -124,7 +124,10 @@ class PosController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
 
-        // 1. Insert Sale
+        $amountPaid = $request->amount_paid ?? $total;
+        $change = $amountPaid - $total;
+
+        // 1. Insert Sale (NO VAT)
         DB::insert("
             INSERT INTO sales (
                 customer_id, employee_id, sale_date,
@@ -136,28 +139,24 @@ class PosController extends Controller
             $request->customer_id ?? null,
             auth()->id(),
             $total,
-            $request->amount_paid ?? $total,
-            ($request->amount_paid ?? $total) - $total,
+            $amountPaid,
+            $change,
             $request->payment_method,
         ]);
 
         $saleId = DB::getPdo()->lastInsertId();
 
         Session::forget('cart');
-        $vatRate = 0.12;
-        $vat = $total * $vatRate;
-        $grandTotal = $total + $vat;
-        $amountPaid = $request->amount_paid ?? $grandTotal;
-        $change = $amountPaid - $grandTotal;
 
+        // Receipt session (NO VAT)
         Session::put('receipt', [
             'items' => $cart,
             'subtotal' => $total,
-            'vat' => $vat,
-            'total' => $grandTotal,
+            'total' => $total,
             'paid' => $amountPaid,
             'change' => $change,
         ]);
+
         // 2. Insert Sale Details + Deduct Inventory + Stock Out
         foreach ($cart as $item) {
 
@@ -179,7 +178,6 @@ class PosController extends Controller
                 $item['id']
             ]);
 
-            // Get inventory id for stock_out
             $inventory = DB::selectOne("
                 SELECT id FROM inventory
                 WHERE product_id = ?
