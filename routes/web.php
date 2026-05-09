@@ -34,6 +34,8 @@ Route::middleware(['auth', 'role:1'])->group(function () {
     Route::get('/credits', [CreditController::class, 'index'])->name('credits');
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
 
+    Route::post('inventory', [InventoryController::class, 'store'])->name('products.store');
+
 });
 Route::middleware(['auth', 'role:2'])->group(function () {
     Route::get('/employee-dashboard', [DashboardController::class, 'employee_index'])->name('employee-dashboard');
@@ -107,5 +109,6 @@ Route::middleware(['auth', 'role:3'])->group(function () {
         ->name('customer.cart.checkout');
     Route::get('/customer/history', [HistoryController::class, 'history_customer'])->name('customer-history');
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart-clear');
+    
 });
 require __DIR__.'/auth.php';

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Inventory;
+use App\Models\Product;
+
 class InventoryController extends Controller
 {
     public function index()
@@ -41,11 +45,53 @@ class InventoryController extends Controller
             WHERE quantity_on_hand = 0
         ");
 
+        $brands = DB::select("
+            SELECT * FROM brands
+        ");
+
+        $categories = DB::select("
+            SELECT * FROM categories
+        ");
+
         return view('inventory', compact(
             'totalProducts',
             'lowStock',
             'outOfStock',
-            'products'
+            'products',
+            'brands',
+            'categories'
         ));
+    }
+    
+
+    public function store(Request $request)
+    {
+        // 1. Validate input
+        $request->validate([
+            'product_name' => 'required|string|max:255',
+            'brand_id' => 'required|exists:brands,id',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'expiration_date' => 'nullable|date',
+        ]);
+
+        // 2. Create product
+        $product = Product::create([
+            'product_name' => $request->product_name,
+            'brand_id' => $request->brand_id,
+            'category_id' => $request->category_id,
+            'price' => $request->price,
+            'expiration_date' => $request->expiration_date,
+        ]);
+
+        // 3. Create inventory row (important!)
+        Inventory::create([
+            'product_id' => $product->id,
+            'quantity_on_hand' => $request->initial_stock ?? 0,
+            'reorder_level' => 10,
+        ]);
+        
+        // 4. Redirect back
+        return redirect()->back()->with('success', 'Product added successfully!');
     }
 }
