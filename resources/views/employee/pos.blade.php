@@ -233,6 +233,61 @@
         </div>
     </div>
 </div>
+@endif
+<div
+    x-data="{ open: {{ session('openCreditModal') ? 'true' : 'false' }} }"
+    x-init="if(open) document.body.style.overflow='hidden'"
+    x-show="open"
+    x-cloak
+    class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+>
+    <div class="bg-white p-6 rounded-xl w-[400px] shadow-lg">
+
+        <h2 class="text-lg font-bold mb-4">Credit Customer Details</h2>
+
+        <form method="POST" action="{{ route('credit.store') }}">
+            @csrf
+
+            <input type="hidden" name="sale_id"
+                value="{{ session('credit_checkout.sale_id') }}">
+
+            <div class="space-y-3">
+
+                <input type="text" name="customer_name"
+                    placeholder="Full Name"
+                    class="w-full border rounded p-2" required>
+
+                <input type="text" name="contact_number"
+                    placeholder="Contact Number"
+                    class="w-full border rounded p-2">
+
+                <textarea name="address"
+                        placeholder="Address"
+                        class="w-full border rounded p-2"></textarea>
+
+                <input type="number" name="balance"
+                    value="{{ session('credit_checkout.total') }}"
+                    class="w-full border rounded p-2">
+
+                <input type="date" name="due_date"
+                    class="w-full border rounded p-2">
+
+            </div>
+
+            <div class="mt-4 flex justify-end gap-2">
+                <button type="button"
+                        @click="open = false"
+                        class="px-3 py-2 bg-gray-200 rounded">
+                    Cancel
+                </button>
+
+                <button class="px-3 py-2 bg-indigo-600 text-white rounded">
+                    Save Credit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <style>
     @media print {
@@ -252,5 +307,5 @@ function closeReceipt() {
     document.getElementById('receiptModal').remove();
 }
 </script>
-@endif
+
 </x-employee-app-layout>

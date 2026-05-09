@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Session;
 class CreditController extends Controller
 {
     public function index()
@@ -30,5 +30,31 @@ class CreditController extends Controller
         ");
 
         return view('credits', compact('credits'));
+    }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'sale_id' => 'required',
+            'customer_name' => 'required',
+            'balance' => 'required',
+            'due_date' => 'required',
+        ]);
+
+        DB::table('credits')->insert([
+            'sale_id' => $request->sale_id,
+            'customer_name' => $request->customer_name,
+            'contact_number' => $request->contact_number,
+            'address' => $request->address,
+            'balance' => $request->balance,
+            'due_date' => $request->due_date,
+            'status' => 'unpaid',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        Session::forget('credit_checkout');
+
+        return redirect()->route('pos')
+            ->with('success', 'Credit saved successfully!');
     }
 }

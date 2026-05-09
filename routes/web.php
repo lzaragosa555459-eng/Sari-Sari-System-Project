@@ -99,6 +99,8 @@ Route::middleware(['auth', 'role:2'])->group(function () {
     Route::get('/employee-book', [BookController::class, 'index'])->name('book');
     Route::post('/employee/bookings/checkout/{customerId}', [BookController::class, 'checkout'])
         ->name('employee.bookings.checkout');
+
+    Route::post('/employee/credit', [CreditController::class, 'store'])->name('credit.store');
 });
 
 Route::middleware(['auth', 'role:3'])->group(function () {

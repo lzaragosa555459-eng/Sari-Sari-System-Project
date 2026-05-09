@@ -13,10 +13,17 @@ return new class extends Migration
     {
         Schema::create('credits', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('sale_id')->nullable()->constrained('sales')->onDelete('set null');
+
+            $table->string('customer_name')->nullable();
+            $table->string('contact_number')->nullable();
+            $table->text('address')->nullable();
+
             $table->decimal('balance', 10, 2);
             $table->date('due_date');
             $table->enum('status', ['paid', 'unpaid', 'partial']);
+
             $table->timestamps();
         });
     }
