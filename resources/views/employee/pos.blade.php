@@ -253,22 +253,27 @@
 
             <div class="space-y-3">
 
+                <label for="name">Name</label>
                 <input type="text" name="customer_name"
                     placeholder="Full Name"
                     class="w-full border rounded p-2" required>
 
+                <label for="contact_number">Contact number</label>
                 <input type="text" name="contact_number"
                     placeholder="Contact Number"
                     class="w-full border rounded p-2">
 
+                <label for="address">Address</label>
                 <textarea name="address"
                         placeholder="Address"
                         class="w-full border rounded p-2"></textarea>
 
+                <label for="balance">Balance</label>
                 <input type="number" name="balance"
                     value="{{ session('credit_checkout.total') }}"
                     class="w-full border rounded p-2">
 
+                <label for="due_date">Due date</label>
                 <input type="date" name="due_date"
                     class="w-full border rounded p-2">
 

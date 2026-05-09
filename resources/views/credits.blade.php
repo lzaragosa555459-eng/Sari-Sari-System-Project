@@ -21,8 +21,9 @@
                                 <tr>
                                     <th class="px-6 py-4">Credit ID</th>
                                     <th class="px-6 py-4">Customer</th>
+                                    <th class="px-6 py-4">Address</th>
+                                    <th class="px-6 py-4">Contact number</th>
                                     <th class="px-6 py-4">Total Amount</th>
-                                    <th class="px-6 py-4">Amount Paid</th>
                                     <th class="px-6 py-4">Balance</th>
                                     <th class="px-6 py-4">Due Date</th>
                                     <th class="px-6 py-4 text-center">Status</th>
@@ -34,13 +35,16 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <td class="px-6 py-4 font-mono text-xs text-gray-400">#{{ $credit->id }}</td>
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                                        {{ $credit->customer_name }}
+                                        {{ $credit->customer_name ?? null }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                        {{ $credit->address }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                        {{ $credit->contact_number }}
                                     </td>
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
                                         ₱{{ number_format($credit->total_amount, 2) }}
-                                    </td>
-                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
-                                        ₱{{ number_format($credit->amount_paid, 2) }}
                                     </td>
                                     <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">
                                         ₱{{ number_format($credit->balance, 2) }}
@@ -147,10 +151,10 @@
                                         <input
                                             type="number"
                                             step="0.01"
-                                            name="amount_paid"
+                                            name="amount_tendered"
                                             required
                                             class="w-full border rounded-lg p-2"
-                                        >
+                                        />
                                     </div>
 
                                     <div>
@@ -206,37 +210,42 @@
 
                             <div class="overflow-x-auto max-h-64 overflow-y-auto border rounded-lg">
                                 <table class="w-full text-sm">
-                                    <thead class="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <th class="px-4 py-3 text-left">Date</th>
-                                            <th class="px-4 py-3 text-left">Amount</th>
-                                            <th class="px-4 py-3 text-left">Method</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                        @forelse ($creditPayments as $payment)
-                                        <tr>
-                                            <td class="px-4 py-3">
-                                                {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
-                                            </td>
-                                            <td class="px-4 py-3 font-semibold">
-                                                ₱{{ number_format($payment->amount_paid, 2) }}
-                                            </td>
-                                            <td class="px-4 py-3 font-semibold">
-                                                ₱{{ number_format($payment->change, 2) }}
-                                            </td>
-                                            <td class="px-4 py-3">
-                                                {{ $payment->method }}
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="3" class="px-4 py-6 text-center text-gray-500 italic">
-                                                No payments recorded yet.
-                                            </td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
+                                    <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 text-left">Date</th>
+                                        <th class="px-4 py-3 text-left">Amount</th>
+                                        <th class="px-4 py-3 text-left">Change</th>
+                                        <th class="px-4 py-3 text-left">Method</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    @forelse ($creditPayments as $payment)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
+                                        </td>
+
+                                        <td class="px-4 py-3 font-semibold">
+                                            ₱{{ number_format($payment->amount_paid, 2) }}
+                                        </td>
+
+                                        <td class="px-4 py-3 font-semibold">
+                                            ₱{{ number_format($payment->change, 2) }}
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            {{ $payment->method }}
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-6 text-center text-gray-500 italic">
+                                            No payments recorded yet.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
                                 </table>
                             </div>
                         </div>

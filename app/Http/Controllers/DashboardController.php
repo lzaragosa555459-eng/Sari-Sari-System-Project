@@ -9,42 +9,81 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalsalesTransactionToday = DB::selectOne("
-            SELECT COUNT(*) AS total_transaction_Today FROM sales 
-            WHERE DATE(sale_date) = CURDATE()
-        ")->total_transaction_Today;
-
+        // 📦 TOTAL SALES (ALL TRANSACTIONS)
         $totalSalesToday = DB::selectOne("
-            SELECT SUM(total_amount) AS total_sales_today
+            SELECT COALESCE(SUM(total_amount), 0) AS total
             FROM sales
             WHERE DATE(sale_date) = CURDATE()
-        ")->total_sales_today;
-
-        $totalAmount = DB::selectOne("
-            SELECT SUM(total_amount) as total FROM sales
-        ");
+        ")->total;
 
         $totalSalesThisMonth = DB::selectOne("
-            SELECT COALESCE(SUM(total_amount), 0) AS total_sales_this_month
+            SELECT COALESCE(SUM(total_amount), 0) AS total
             FROM sales
             WHERE MONTH(sale_date) = MONTH(CURDATE())
             AND YEAR(sale_date) = YEAR(CURDATE())
-        ")->total_sales_this_month;
+        ")->total;
+
+        $totalAllTimeSales = DB::selectOne("
+            SELECT COALESCE(SUM(total_amount), 0) AS total
+            FROM sales
+        ")->total;
 
 
-        $netCashKeptToday = DB::selectOne("
-            SELECT COALESCE(SUM(amount_paid - `change`), 0) AS net_cash_kept_today
+        // 💰 CASH COLLECTED (REAL MONEY TODAY)
+        $cashCollectedToday = DB::selectOne("
+            SELECT COALESCE(SUM(amount_paid - `change`), 0) AS total
             FROM sales
             WHERE payment_method = 'cash'
             AND DATE(sale_date) = CURDATE()
-        ")->net_cash_kept_today;
+        ")->total;
 
+
+        // 🧾 CREDIT PAYMENTS (UTANG COLLECTION)
+        $creditPaymentsToday = DB::selectOne("
+            SELECT COALESCE(SUM(amount_paid), 0) AS total
+            FROM credit_payments
+            WHERE DATE(payment_date) = CURDATE()
+        ")->total;
+
+        $creditPaymentsThisMonth = DB::selectOne("
+            SELECT COALESCE(SUM(amount_paid), 0) AS total
+            FROM credit_payments
+            WHERE MONTH(payment_date) = MONTH(CURDATE())
+            AND YEAR(payment_date) = YEAR(CURDATE())
+        ")->total;
+
+
+        // 📊 TOTAL REVENUE (REAL INCOME)
+        $totalRevenueToday = $cashCollectedToday + $creditPaymentsToday;
+
+        $totalRevenueAllTime = DB::selectOne("
+            SELECT 
+                COALESCE(SUM(total_amount), 0) +
+                (
+                    SELECT COALESCE(SUM(amount_paid), 0)
+                    FROM credit_payments
+                ) AS total
+            FROM sales
+        ")->total;
+
+
+        // 🧾 TRANSACTIONS
+        $totalTransactionsToday = DB::selectOne("
+            SELECT COUNT(*) AS total
+            FROM sales
+            WHERE DATE(sale_date) = CURDATE()
+        ")->total;
+
+
+        // 📉 OUTSTANDING CREDIT
         $totalOutstandingCredit = DB::selectOne("
-            SELECT COALESCE(SUM(balance), 0) AS total_outstanding_credit
+            SELECT COALESCE(SUM(balance), 0) AS total
             FROM credits
             WHERE balance > 0
-        ")->total_outstanding_credit;
+        ")->total;
 
+
+        // 📊 CHART DATA (SALES ONLY)
         $sales = DB::select("
             SELECT DATE(sale_date) as date,
                 SUM(total_amount) as total
@@ -61,15 +100,26 @@ class DashboardController extends Controller
             $data[] = $sale->total;
         }
 
+
         $totalNet = Store_cash::first();
 
         return view('dashboard', compact(
             'totalSalesToday',
-            'totalAmount', 
-            'totalsalesTransactionToday', 
-            'totalSalesThisMonth', 'netCashKeptToday', 
+            'totalSalesThisMonth',
+            'totalAllTimeSales',
+
+            'cashCollectedToday',
+
+            'creditPaymentsToday',
+            'creditPaymentsThisMonth',
+
+            'totalRevenueToday',
+            'totalRevenueAllTime',
+
+            'totalTransactionsToday',
             'totalOutstandingCredit',
-            'labels', 
+
+            'labels',
             'data',
             'totalNet'
         ));
