@@ -77,11 +77,17 @@ class DashboardController extends Controller
 
         // 📉 OUTSTANDING CREDIT
         $totalOutstandingCredit = DB::selectOne("
-            SELECT COALESCE(SUM(balance), 0) AS total
-            FROM credits
-            WHERE balance > 0
+            SELECT COALESCE(SUM(x.balance), 0) AS total
+            FROM (
+                SELECT
+                    c.id,
+                    (s.total_amount - COALESCE(SUM(cp.amount_paid - cp.`change`), 0)) AS balance
+                FROM credits c
+                LEFT JOIN sales s ON c.sale_id = s.id
+                LEFT JOIN credit_payments cp ON c.id = cp.credit_id
+                GROUP BY c.id, s.total_amount
+            ) x
         ")->total;
-
 
         // 📊 CHART DATA (SALES ONLY)
         $sales = DB::select("

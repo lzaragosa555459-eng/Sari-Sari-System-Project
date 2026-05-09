@@ -19,6 +19,7 @@
                                 <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Date</th>
                                 <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Items</th>
                                 <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 text-right">Total</th>
+                                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Method</th>
                                 <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 text-center">Action</th>
                             </tr>
                         </thead>
@@ -65,6 +66,11 @@
                                     <td class="px-6 py-4 text-right whitespace-nowrap">
                                         <span class="text-indigo-600 dark:text-indigo-400 font-black">
                                             ₱{{ number_format($sale->total_amount, 2) }}
+                                        </span>
+                                    </td>  
+                                    <td class="px-6 py-4 text-left whitespace-nowrap">
+                                        <span class="text-indigo-600 dark:text-indigo-400 font-black">
+                                            {{ $sale->payment_method }}
                                         </span>
                                     </td>
 
