@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('credit_id')->constrained('credits')->onDelete('cascade');
 
             $table->decimal('amount_paid', 10, 2);
+            $table->decimal('change', 10, 2);
             $table->date('payment_date');
 
             $table->string('method');
