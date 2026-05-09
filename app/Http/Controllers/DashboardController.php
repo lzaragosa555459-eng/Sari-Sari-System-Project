@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Store_cash;
 class DashboardController extends Controller
 {
     public function index()
@@ -61,6 +61,8 @@ class DashboardController extends Controller
             $data[] = $sale->total;
         }
 
+        $totalNet = Store_cash::first();
+
         return view('dashboard', compact(
             'totalSalesToday',
             'totalAmount', 
@@ -68,7 +70,8 @@ class DashboardController extends Controller
             'totalSalesThisMonth', 'netCashKeptToday', 
             'totalOutstandingCredit',
             'labels', 
-            'data'
+            'data',
+            'totalNet'
         ));
     }
 

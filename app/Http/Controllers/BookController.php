@@ -87,6 +87,15 @@ class BookController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $cash = DB::table('store_cash')->first();
+
+        DB::table('store_cash')
+            ->where('id', $cash->id)
+            ->update([
+                'current_balance' => $cash->current_balance + $total,
+                'total_income' => $cash->total_income + $total,
+                'updated_at' => now(),
+            ]);
 
         // 5. SALE DETAILS
         foreach ($bookings as $item) {

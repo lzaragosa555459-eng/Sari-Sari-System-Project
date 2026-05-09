@@ -203,7 +203,23 @@ class PosController extends Controller
                 $saleId
             ]);
         }
+        
+        $cash = DB::selectOne("
+            SELECT * FROM store_cash LIMIT 1
+        ");
 
+        DB::update("
+            UPDATE store_cash
+            SET current_balance = current_balance + ?,
+                total_income = total_income + ?,
+                updated_at = NOW()
+            WHERE id = ?
+        ", [
+            $total,
+            $total,
+            $cash->id
+        ]);
+                
         return redirect()->back()->with('showReceipt', true);
     }
 

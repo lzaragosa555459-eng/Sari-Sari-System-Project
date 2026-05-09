@@ -20,6 +20,7 @@ use Database\Seeders\SupplierProductSeeder;
 use Database\Seeders\CreditPaymentSeeder;
 use Database\Seeders\StockInSeeder;
 use Database\Seeders\StockOutSeeder;
+use Database\Seeders\StoreCashSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
             InventorySeeder::class,
             StockInSeeder::class,
             StockOutSeeder::class,
+            StoreCashSeeder::class,
         ]);
     }
 }
