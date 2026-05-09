@@ -14,8 +14,7 @@
                         historyOpen: false,
                         creditId: '',
                         customerName: '',
-                        balance: 0,
-                        specificHistory: []
+                        balance: 0
                     }">
                     
                     <div class="overflow-x-auto">
@@ -67,11 +66,7 @@
                                         @endif
 
                                         <button type="button"
-                                            @click="
-                                                historyOpen = true; 
-                                                customerName = '{{ addslashes($credit->customer_name) }}'; 
-                                                specificHistory = {{ $credit->payments->toJson() }};
-                                            "
+                                            @click="historyOpen = true; customerName = '{{ addslashes($credit->customer_name) }}'; creditId = {{ $credit->id }};"
                                             class="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                                             History
                                         </button>
@@ -100,6 +95,7 @@
                                     <p class="text-lg font-black dark:text-white" x-text="customerName"></p>
                                     <p class="text-sm mt-2 text-gray-600 dark:text-gray-400">Balance: <span class="font-bold">₱<span x-text="parseFloat(balance).toLocaleString()"></span></span></p>
                                 </div>
+                                
                                 <form method="POST" action="{{ route('credit.pay') }}" class="space-y-4">
                                     @csrf
                                     <input type="hidden" name="credit_id" :value="creditId">
@@ -123,51 +119,68 @@
 
                     <div x-show="historyOpen" x-cloak class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                         <div @click.away="historyOpen = false" class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
-                            <div class="px-8 py-6 border-b dark:border-gray-700 flex justify-between items-center">
-                                <h2 class="text-xl font-black dark:text-white">Payment History for <span class="text-indigo-500" x-text="customerName"></span></h2>
-                                <button @click="historyOpen = false" class="text-gray-400 hover:text-red-500">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2"/></svg>
+                            <div class="px-8 py-6 flex justify-between items-center border-b dark:border-gray-700">
+                                <div>
+                                    <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Payment History</h2>
+                                    <p class="text-sm text-indigo-500 font-medium" x-text="customerName"></p>
+                                </div>
+                                <button @click="historyOpen = false" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </button>
                             </div>
+
                             <div class="p-8">
-                                <div class="overflow-hidden border dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-900/20">
-                                    <table class="w-full text-left">
-                                        <thead class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-                                            <tr>
-                                                <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Date</th>
-                                                <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Amount Paid</th>
-                                                <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Method</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <template x-for="payment in specificHistory" :key="payment.id">
-                                                <tr class="border-b dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition">
-                                                    <td class="px-6 py-4 text-sm dark:text-gray-400" x-text="new Date(payment.payment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })"></td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="text-sm font-bold dark:text-white" x-text="'₱' + parseFloat(payment.amount_paid).toLocaleString(undefined, {minimumFractionDigits: 2})"></span>
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 dark:text-gray-300" x-text="payment.method"></span>
-                                                    </td>
-                                                </tr>
-                                            </template>
-                                            <template x-if="specificHistory.length === 0">
+                                <div class="overflow-hidden border border-gray-100 dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-900/20">
+                                    <div class="max-h-[400px] overflow-y-auto custom-scrollbar">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead class="sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
                                                 <tr>
-                                                    <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic">No payments recorded.</td>
+                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Date</th>
+                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Amount Paid</th>
+                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Method</th>
                                                 </tr>
-                                            </template>
-                                        </tbody>
-                                    </table>
-                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
+                                                @forelse ($creditPayments as $payment)
+                                                <tr class="hover:bg-white dark:hover:bg-gray-800 transition-colors">
+                                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                                                        {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($payment->amount_paid, 2) }}</span>
+                                                        @if($payment->change > 0)
+                                                            <p class="text-[10px] text-green-500">Change: ₱{{ number_format($payment->change, 2) }}</p>
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                                                            {{ $payment->method }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                @empty
+                                                <tr>
+                                                    <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic">No records found for this credit.</td>
+                                                </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                </div> </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <style>
         [x-cloak] { display: none !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; }
     </style>
 </x-app-layout>

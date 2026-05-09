@@ -5,12 +5,35 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use App\Models\Credit;
 class CreditController extends Controller
 {
     public function index()
     {
-        $credits = Credit::with('payments')->latest()->get();
+        $credits = DB::select("
+            SELECT 
+                c.id,
+                c.customer_name,
+                c.address,
+                c.contact_number,
+                s.total_amount,
+
+                COALESCE(SUM(cp.amount_paid), 0) AS amount_paid,
+
+                (s.total_amount - COALESCE(SUM(cp.amount_paid), 0)) AS balance,
+
+                c.due_date
+            FROM credits c
+            LEFT JOIN sales s ON c.sale_id = s.id
+            LEFT JOIN credit_payments cp ON c.id = cp.credit_id
+            GROUP BY 
+                c.id,
+                c.customer_name,
+                c.address,
+                c.contact_number,
+                s.total_amount,
+                c.due_date
+        ");
+
         $creditPayments = DB::select("
             SELECT
                 cp.*,
