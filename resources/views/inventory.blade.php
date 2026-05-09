@@ -74,6 +74,7 @@
                                 <th class="px-6 py-4">Stock</th>
                                 <th class="px-6 py-4">Reorder</th>
                                 <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -93,6 +94,27 @@
                                     @else
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">In Stock</span>
                                     @endif
+                                </td>
+                                <td class="px-6 py-4 text-xs flex gap-2">
+
+                                    <button
+                                        onclick='openEditModal(@json($product))'
+                                        class="px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST"
+                                        onsubmit="return confirm('Delete this product?')">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button class="px-2 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200">
+                                            Delete
+                                        </button>
+                                    </form>
+
                                 </td>
                             </tr>
                             @endforeach
@@ -206,9 +228,7 @@
 
             <!-- Buttons -->
             <div class="mt-8 flex justify-end gap-3 border-t pt-6">
-                <button type="button" x-on:click="$dispatch('close')" class="text-gray-600">
-                    Cancel
-                </button>
+                <button type="button" x-on:click="$dispatch('close')">Cancel</button>
 
                 <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg">
                     Save Product
@@ -217,4 +237,146 @@
         </form>
     </div>
 </x-modal>
+<x-modal name="edit-product" :show="false" focusable>
+    <div class="relative overflow-hidden bg-white p-0 sm:rounded-2xl">
+
+        <!-- Header -->
+        <div class="border-b border-gray-100 px-8 py-6">
+            <h2 class="text-xl font-bold tracking-tight text-gray-900">
+                Edit Product
+            </h2>
+            <p class="mt-1 text-sm leading-6 text-gray-500">
+                Update product details in your inventory.
+            </p>
+        </div>
+
+        <form method="POST" id="editForm" class="px-8 py-6">
+            @csrf
+            @method('PUT')
+
+            <input type="hidden" name="id" id="edit_id">
+
+            <div class="space-y-6">
+
+                <!-- Product Name -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-900">
+                        Product Name
+                    </label>
+                    <input
+                        type="text"
+                        name="product_name"
+                        id="edit_name"
+                        class="w-full rounded-lg border-gray-300 shadow-sm"
+                        required
+                    >
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-900">
+                        Price
+                    </label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="price"
+                        id="edit_price"
+                        class="w-full rounded-lg border-gray-300 shadow-sm"
+                        required
+                    >
+                </div>
+
+                <!-- Brand & Category -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    <!-- Brand -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900">
+                            Brand
+                        </label>
+                        <select
+                            name="brand_id"
+                            id="edit_brand"
+                            class="w-full rounded-lg border-gray-300 shadow-sm"
+                            required
+                        >
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}">
+                                    {{ $brand->brand_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900">
+                            Category
+                        </label>
+                        <select
+                            name="category_id"
+                            id="edit_category"
+                            class="w-full rounded-lg border-gray-300 shadow-sm"
+                            required
+                        >
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">
+                                    {{ $category->category_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Expiration Date -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-900">
+                        Expiration Date
+                    </label>
+                    <input
+                        type="date"
+                        name="expiration_date"
+                        id="edit_exp"
+                        class="w-full rounded-lg border-gray-300 shadow-sm"
+                    >
+                </div>
+
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6">
+                <button
+                    type="button"
+                    x-on:click="$dispatch('close')"
+                    class="text-sm font-semibold text-gray-600 hover:text-gray-900"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-500 transition"
+                >
+                    Update Product
+                </button>
+            </div>
+
+        </form>
+    </div>
+</x-modal>
+<script>
+function openEditModal(product) {
+
+    document.getElementById('editForm').action = `/products/${product.id}`;
+
+    document.getElementById('edit_name').value = product.product_name;
+    document.getElementById('edit_price').value = product.price;
+    document.getElementById('edit_exp').value = product.expiration_date;
+
+    document.getElementById('edit_id').value = product.id;
+
+    window.dispatchEvent(new CustomEvent('open-modal', { detail: 'edit-product' }));
+}
+</script>
 </x-app-layout>

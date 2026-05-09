@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\BookController;
-
+use App\Http\Controllers\ProductController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -34,7 +34,10 @@ Route::middleware(['auth', 'role:1'])->group(function () {
     Route::get('/credits', [CreditController::class, 'index'])->name('credits');
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
 
-    Route::post('inventory', [InventoryController::class, 'store'])->name('products.store');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 
 });
 Route::middleware(['auth', 'role:2'])->group(function () {
