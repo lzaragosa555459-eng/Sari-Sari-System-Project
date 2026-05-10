@@ -147,7 +147,23 @@
                         value="₱0.00" readonly>
                 </div>
             </div>
+            <div class="mt-4">
+                <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Payment Method
+                </label>
 
+                <select
+                    name="payment_method"
+                    id="payment_method"
+                    class="block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white
+                        focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                    required
+                >
+                    <option value="" disabled selected>Select method</option>
+                    <option value="cash">Cash</option>
+                    <option value="credit">Credit</option>
+                </select>
+            </div>
             <div class="flex gap-3 mt-8">
                 <button type="button" onclick="closeModal()"
                     class="flex-1 px-6 py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-2xl font-bold text-sm transition-all active:scale-95 uppercase tracking-widest">

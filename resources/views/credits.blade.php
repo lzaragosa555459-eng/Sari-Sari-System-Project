@@ -36,9 +36,11 @@
                                 @forelse ($credits as $credit)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <td class="px-6 py-4 font-mono text-xs text-gray-400">#{{ $credit->id }}</td>
-                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $credit->customer_name }}</td>
-                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $credit->address }}</td>
-                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $credit->contact_number }}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                        {{ $credit->customer_name ?? data_get($credit, 'sale.user.name') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $credit->address ?? data_get($credit, 'sale.user.customer.address') }}</td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $credit->contact_number ?? data_get($credit, 'sale.user.customer.contact_number')}}</td>
                                     <td class="px-6 py-4">₱{{ number_format($credit->total_amount, 2) }}</td>
                                     <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">₱{{ number_format($credit->balance, 2) }}</td>
                                     <td class="px-6 py-4">
@@ -171,7 +173,7 @@
                                                 @foreach ($credits as $credit)
                                                     <template x-if="creditId == {{ $credit->id }}">
                                                         @php
-                                                            $payments = $creditPayments[$credit->id] ?? [];
+                                                            $payments = collect($creditPayments[$credit->id] ?? []);
                                                         @endphp
 
                                                         @if ($payments->count() > 0)

@@ -68,7 +68,6 @@ Route::middleware(['auth', 'role:2'])->group(function () {
             [HistoryController::class, 'index']
         )->name('employee.transactions');
 
-        // ✅ STEP 3 GOES HERE
         Route::get('/employee/receipt-data/{id}', function ($id) {
 
             $sale = DB::selectOne("

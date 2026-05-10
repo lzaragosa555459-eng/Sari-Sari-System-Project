@@ -42,86 +42,130 @@ class BookController extends Controller
 
     public function checkout(Request $request, $customerId)
     {
-        // 1. Get ALL pending bookings for this customer
         $bookings = DB::table('bookings')
             ->join('products', 'products.id', '=', 'bookings.product_id')
             ->where('bookings.customer_id', $customerId)
             ->where('bookings.status', 'pending')
-            ->select(
-                'bookings.product_id',
-                'bookings.quantity',
-                'products.price'
-            )
+            ->select('bookings.product_id', 'bookings.quantity', 'products.price')
             ->get();
 
         if ($bookings->isEmpty()) {
             return back()->with('error', 'No pending bookings found.');
         }
 
-        // 2. Compute total
         $total = 0;
 
         foreach ($bookings as $item) {
             $total += $item->price * $item->quantity;
         }
 
-        // 3. GET CASH INPUT (FROM MODAL)
-        $amountPaid = $request->amount_paid ?? 0;
+        $paymentMethod = $request->payment_method;
+        $amountPaid = (float) $request->amount_paid;
+        $change = 0;
 
-        // validation (important for POS)
-        if ($amountPaid < $total) {
-            return back()->with('error', 'Insufficient payment.');
+        DB::beginTransaction();
+
+        try {
+
+            // =========================
+            // 💳 CREDIT CHECKOUT
+            // =========================
+            if ($paymentMethod === 'credit') {
+
+                $saleId = DB::table('sales')->insertGetId([
+                    'customer_id' => $customerId,
+                    'employee_id' => auth()->id(),
+                    'sale_date' => now(),
+                    'total_amount' => $total,
+                    'amount_paid' => 0,
+                    'change' => 0,
+                    'payment_method' => 'credit',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $customer = DB::table('customers')
+                    ->where('id', $customerId)
+                    ->first();
+
+                DB::table('credits')->insert([
+                    'sale_id' => $saleId,
+                    'customer_name' => null,
+                    'contact_number' => null,
+                    'address' => null,
+                    'balance' => $total,
+                    'due_date' => now()->addDays(7),
+                    'status' => 'unpaid',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            }
+
+            // =========================
+            // 💵 CASH CHECKOUT
+            // =========================
+            else {
+
+                if ($amountPaid < $total) {
+                    return back()->with('error', 'Insufficient payment.');
+                }
+
+                $change = $amountPaid - $total;
+
+                $saleId = DB::table('sales')->insertGetId([
+                    'customer_id' => $customerId,
+                    'employee_id' => auth()->id(),
+                    'sale_date' => now(),
+                    'total_amount' => $total,
+                    'amount_paid' => $amountPaid,
+                    'change' => $change,
+                    'payment_method' => 'cash',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $cash = DB::table('store_cash')->first();
+
+                DB::table('store_cash')
+                    ->where('id', $cash->id)
+                    ->update([
+                        'current_balance' => $cash->current_balance + $total,
+                        'total_income' => $cash->total_income + $total,
+                        'updated_at' => now(),
+                    ]);
+            }
+
+            // =========================
+            // SALE DETAILS (BOTH)
+            // =========================
+            foreach ($bookings as $item) {
+
+                DB::table('sale_details')->insert([
+                    'sale_id' => $saleId,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                DB::table('inventory')
+                    ->where('product_id', $item->product_id)
+                    ->decrement('quantity_on_hand', $item->quantity);
+            }
+
+            DB::table('bookings')
+                ->where('customer_id', $customerId)
+                ->where('status', 'pending')
+                ->update(['status' => 'completed']);
+
+            DB::commit();
+
+            return back()->with('success', 'Checkout completed successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
         }
-
-        $change = $amountPaid - $total;
-
-        // 4. CREATE SALE
-        $saleId = DB::table('sales')->insertGetId([
-            'customer_id' => $customerId,
-            'employee_id' => auth()->id(),
-            'sale_date' => now(),
-            'total_amount' => $total,
-            'amount_paid' => $amountPaid,
-            'change' => $change,
-            'payment_method' => 'cash',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        $cash = DB::table('store_cash')->first();
-
-        DB::table('store_cash')
-            ->where('id', $cash->id)
-            ->update([
-                'current_balance' => $cash->current_balance + $total,
-                'total_income' => $cash->total_income + $total,
-                'updated_at' => now(),
-            ]);
-
-        // 5. SALE DETAILS
-        foreach ($bookings as $item) {
-
-            DB::table('sale_details')->insert([
-                'sale_id' => $saleId,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            // deduct inventory
-            DB::table('inventory')
-                ->where('product_id', $item->product_id)
-                ->decrement('quantity_on_hand', $item->quantity);
-        }
-
-        // 6. COMPLETE BOOKINGS
-        DB::table('bookings')
-            ->where('customer_id', $customerId)
-            ->where('status', 'pending')
-            ->update([
-                'status' => 'completed'
-            ]);
-
-        return back()->with('success', 'Checkout completed successfully!');
     }
 }

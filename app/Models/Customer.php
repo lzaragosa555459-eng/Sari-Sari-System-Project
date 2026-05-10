@@ -11,4 +11,9 @@ class Customer extends Model
         'contact_number',
         'address',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
