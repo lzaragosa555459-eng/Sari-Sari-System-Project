@@ -65,8 +65,13 @@
                                             </button>
                                         @endif
 
+                                       
                                         <button type="button"
-                                            @click="historyOpen = true; customerName = '{{ addslashes($credit->customer_name) }}'; creditId = {{ $credit->id }};"
+                                            @click="
+                                                historyOpen = true;
+                                                customerName = '{{ addslashes($credit->customer_name) }}';
+                                                creditId = {{ $credit->id }};
+                                            "
                                             class="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                                             History
                                         </button>
@@ -116,16 +121,31 @@
                             </div>
                         </div>
                     </div>
+                    <div x-show="historyOpen" x-cloak
+                        class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                    <div x-show="historyOpen" x-cloak class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                        <div @click.away="historyOpen = false" class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <div @click.away="historyOpen = false"
+                            class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+
                             <div class="px-8 py-6 flex justify-between items-center border-b dark:border-gray-700">
                                 <div>
-                                    <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Payment History</h2>
+                                    <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                                        Payment History
+                                    </h2>
                                     <p class="text-sm text-indigo-500 font-medium" x-text="customerName"></p>
                                 </div>
-                                <button @click="historyOpen = false" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+
+                                <button @click="historyOpen = false"
+                                        class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                    <svg class="h-6 w-6 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                 </button>
                             </div>
 
@@ -135,34 +155,62 @@
                                         <table class="w-full text-left border-collapse">
                                             <thead class="sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
                                                 <tr>
-                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Date</th>
-                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Amount Paid</th>
-                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">Method</th>
+                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">
+                                                        Date
+                                                    </th>
+                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">
+                                                        Amount Paid
+                                                    </th>
+                                                    <th class="px-6 py-3 text-[10px] font-black uppercase text-gray-400">
+                                                        Method
+                                                    </th>
                                                 </tr>
                                             </thead>
+
                                             <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
-                                                @forelse ($creditPayments as $payment)
-                                                <tr class="hover:bg-white dark:hover:bg-gray-800 transition-colors">
-                                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                                        {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($payment->amount_paid, 2) }}</span>
-                                                        @if($payment->change > 0)
-                                                            <p class="text-[10px] text-green-500">Change: ₱{{ number_format($payment->change, 2) }}</p>
+                                                @foreach ($credits as $credit)
+                                                    <template x-if="creditId == {{ $credit->id }}">
+                                                        @php
+                                                            $payments = $creditPayments[$credit->id] ?? collect();
+                                                        @endphp
+
+                                                        @if ($payments->count() > 0)
+                                                            @foreach ($payments as $payment)
+                                                                <tr class="hover:bg-white dark:hover:bg-gray-800 transition-colors">
+                                                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                                                                        {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
+                                                                    </td>
+
+                                                                    <td class="px-6 py-4">
+                                                                        <span class="text-sm font-bold text-gray-900 dark:text-white">
+                                                                            ₱{{ number_format($payment->amount_paid, 2) }}
+                                                                        </span>
+
+                                                                        @if ($payment->change > 0)
+                                                                            <p class="text-[10px] text-green-500">
+                                                                                Change:
+                                                                                ₱{{ number_format($payment->change, 2) }}
+                                                                            </p>
+                                                                        @endif
+                                                                    </td>
+
+                                                                    <td class="px-6 py-4">
+                                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                                                                            {{ $payment->method }}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        @else
+                                                            <tr>
+                                                                <td colspan="3"
+                                                                    class="px-6 py-12 text-center text-gray-400 italic">
+                                                                    No records found for this credit.
+                                                                </td>
+                                                            </tr>
                                                         @endif
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
-                                                            {{ $payment->method }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                @empty
-                                                <tr>
-                                                    <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic">No records found for this credit.</td>
-                                                </tr>
-                                                @endforelse
+                                                    </template>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -170,7 +218,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 class CreditController extends Controller
 {
+    // Replace your index() method with this version
     public function index()
     {
         $credits = DB::select("
@@ -16,11 +17,8 @@ class CreditController extends Controller
                 c.address,
                 c.contact_number,
                 s.total_amount,
-
                 COALESCE(SUM(cp.amount_paid), 0) AS amount_paid,
-
                 (s.total_amount - COALESCE(SUM(cp.amount_paid), 0)) AS balance,
-
                 c.due_date
             FROM credits c
             LEFT JOIN sales s ON c.sale_id = s.id
@@ -32,16 +30,15 @@ class CreditController extends Controller
                 c.contact_number,
                 s.total_amount,
                 c.due_date
+            ORDER BY c.id DESC
         ");
 
-        $creditPayments = DB::select("
-            SELECT
-                cp.*,
-                c.customer_name
-            FROM credit_payments cp
-            LEFT JOIN credits c ON cp.credit_id = c.id
-            ORDER BY cp.payment_date DESC, cp.created_at DESC
-        ");
+        // Group all payments by credit_id
+        $creditPayments = DB::table('credit_payments')
+            ->orderBy('payment_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('credit_id');
 
         return view('credits', compact('credits', 'creditPayments'));
     }
@@ -133,14 +130,13 @@ class CreditController extends Controller
             $request->method,
         ]);
 
-        // CASH UPDATE
         if (strtolower($request->method) === 'cash') {
             DB::update("
                 UPDATE store_cash
                 SET current_balance = current_balance + ?,
                     total_income = total_income + ?,
                     updated_at = NOW()
-            ", [$amountPaid, $amountPaid]);
+            ", [$appliedToDebt, $appliedToDebt]);
         }
 
         return back()->with('success', 'Payment recorded successfully.');
