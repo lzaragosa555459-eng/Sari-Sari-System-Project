@@ -26,12 +26,6 @@
                             {{ $pendingTasks }} pending {{ $pendingTasks == 1 ? 'task' : 'tasks' }}
                         </span>.
                     </p>
-                    <div class="mt-6 flex gap-3">
-                        <a href="#"
-                            class="inline-flex items-center px-4 py-2 bg-white text-blue-700 text-sm font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-sm">
-                            View Statements
-                        </a>
-                    </div>
                 </div>
 
                 {{-- Decorative Background Elements --}}

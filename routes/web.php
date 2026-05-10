@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProductController;
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'role:1'])->group(function () {
 
     Route::get('/credits', [CreditController::class, 'index'])->name('credits');
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');

@@ -65,6 +65,7 @@ class HistoryController extends Controller
 
         return view('employee.receipt', compact('sale', 'items'));
     }
+
     //customer history view
     public function history_customer()
     {
@@ -76,10 +77,38 @@ class HistoryController extends Controller
 
         $sales = DB::select("
             SELECT
-                s.*,
-                eu.name AS employee_name
+                s.id,
+                s.created_at,
+                s.total_amount,
+                s.payment_method,
+                eu.name AS employee_name,
+
+                -- CASH PAYMENT (from sales table)
+                s.amount_paid AS cash_paid,
+
+                -- CREDIT PAYMENT (from credit_payments)
+                COALESCE(cp.total_paid, 0) AS credit_paid,
+
+                -- REMAINING BALANCE (ONLY FOR CREDIT)
+                CASE 
+                    WHEN s.payment_method = 'credit'
+                        THEN (s.total_amount - COALESCE(cp.total_paid, 0))
+                    ELSE 0
+                END AS remaining_balance
+
             FROM sales s
             LEFT JOIN users eu ON eu.id = s.employee_id
+
+            -- link sales → credits → credit_payments
+            LEFT JOIN credits c ON c.sale_id = s.id
+            LEFT JOIN (
+                SELECT 
+                    credit_id,
+                    SUM(amount_paid) AS total_paid
+                FROM credit_payments
+                GROUP BY credit_id
+            ) cp ON cp.credit_id = c.id
+
             WHERE s.customer_id = ?
             ORDER BY s.created_at DESC
         ", [$customer->id]);
@@ -104,4 +133,5 @@ class HistoryController extends Controller
             'creditCount' => $creditCount->total,
         ]);
     }
+
 }

@@ -186,7 +186,7 @@ class DashboardController extends Controller
             $pendingTasks = 0;
             $creditBalance = 0;
             $totalPurchases = 0;
-            $transactions = [];
+            $recentTransactions = [];
 
             // Only run queries if the user exists in the customers table
             if ($customer) {
@@ -210,27 +210,30 @@ class DashboardController extends Controller
                     ->where('customer_id', $customer->id)
                     ->count();
 
-                // 4. Recent Transactions
-                $recentTransactions = DB::select("
-                    SELECT
-                        s.id,
-                        s.sale_date,
-                        s.total_amount,
-                        s.payment_method,
-                        CASE
-                            WHEN s.payment_method = 'credit' THEN
+           
+                // 4. Recent Transactions (this week only)
+                        $recentTransactions = DB::select("
+                            SELECT
+                                s.id,
+                                s.sale_date,
+                                s.total_amount,
+                                s.payment_method,
                                 CASE
-                                    WHEN c.status = 'paid' THEN 'Paid'
-                                    ELSE 'Credit'
-                                END
-                            ELSE 'Paid'
-                        END AS status
-                    FROM sales s
-                    LEFT JOIN credits c ON c.sale_id = s.id
-                    WHERE s.customer_id = ?
-                    ORDER BY s.sale_date DESC, s.id DESC
-                    LIMIT 10
-                ", [$customer->id]);
+                                    WHEN s.payment_method = 'credit' THEN
+                                        CASE
+                                            WHEN c.status = 'paid' THEN 'Paid'
+                                            ELSE 'Credit'
+                                        END
+                                    ELSE 'Paid'
+                                END AS status
+                            FROM sales s
+                            LEFT JOIN credits c ON c.sale_id = s.id
+                            WHERE s.customer_id = ?
+                            AND YEARWEEK(s.sale_date, 1) = YEARWEEK(CURDATE(), 1)
+                            ORDER BY s.sale_date DESC, s.id DESC
+                            LIMIT 10
+                        ", [$customer->id]
+                        );
             }
 
             return view('customer.dashboard', compact(

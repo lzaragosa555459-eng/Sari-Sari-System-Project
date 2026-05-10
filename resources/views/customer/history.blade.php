@@ -66,9 +66,10 @@
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Employee</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Amount Paid</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Remaining</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Method</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -82,6 +83,26 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($sale->total_amount, 2) }}</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @if($sale->payment_method == 'cash')
+                                                <span class="text-sm font-bold text-gray-900 dark:text-white">
+                                                    ₱{{ number_format($sale->cash_paid, 2) }}
+                                                </span>
+                                            @else
+                                                <span class="text-sm font-bold text-gray-900 dark:text-white">
+                                                    ₱{{ number_format($sale->credit_paid, 2) }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @if($sale->payment_method == 'credit')
+                                                <span class="text-sm font-bold text-amber-600">
+                                                    ₱{{ number_format($sale->remaining_balance, 2) }}
+                                                </span>
+                                            @else
+                                                <span class="text-sm text-gray-400">—</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 capitalize">
                                             {{ $sale->payment_method }}
@@ -98,11 +119,6 @@
                                                     Pending
                                                 </span>
                                             @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <a href="#" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-blue-600 hover:text-white transition-all">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach
