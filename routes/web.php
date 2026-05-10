@@ -44,7 +44,11 @@ Route::middleware(['auth', 'role:1'])->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     Route::post('/credit-pay', [CreditController::class, 'store_payment'])->name('credit.pay');
+    Route::get('/maintenance', [MaintenanceController::class, 'index']);
 
+    Route::post('/supplier-products', [MaintenanceController::class, 'store']);
+    Route::put('/supplier-products/{id}', [MaintenanceController::class, 'update']);
+    Route::delete('/supplier-products/{id}', [MaintenanceController::class, 'destroy']);
 });
 Route::middleware(['auth', 'role:2'])->group(function () {
     Route::get('/employee-dashboard', [DashboardController::class, 'employee_index'])->name('employee-dashboard');
