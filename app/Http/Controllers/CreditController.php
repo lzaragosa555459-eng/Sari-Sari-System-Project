@@ -17,23 +17,21 @@ class CreditController extends Controller
                 c.address,
                 c.contact_number,
                 s.total_amount,
-                COALESCE(SUM(cp.amount_paid), 0) AS amount_paid,
-                (s.total_amount - COALESCE(SUM(cp.amount_paid), 0)) AS balance,
+                COALESCE(p.total_paid, 0) AS amount_paid,
+                (s.total_amount - COALESCE(p.total_paid, 0)) AS balance,
                 c.due_date
             FROM credits c
             LEFT JOIN sales s ON c.sale_id = s.id
-            LEFT JOIN credit_payments cp ON c.id = cp.credit_id
-            GROUP BY 
-                c.id,
-                c.customer_name,
-                c.address,
-                c.contact_number,
-                s.total_amount,
-                c.due_date
+            LEFT JOIN (
+                SELECT 
+                    credit_id,
+                    SUM(amount_paid) AS total_paid
+                FROM credit_payments
+                GROUP BY credit_id
+            ) p ON c.id = p.credit_id
             ORDER BY c.id DESC
         ");
 
-        // Group all payments by credit_id
         $creditPayments = DB::table('credit_payments')
             ->orderBy('payment_date', 'desc')
             ->orderBy('created_at', 'desc')

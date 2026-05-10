@@ -69,8 +69,8 @@
                                         <button type="button"
                                             @click="
                                                 historyOpen = true;
-                                                customerName = '{{ addslashes($credit->customer_name) }}';
                                                 creditId = {{ $credit->id }};
+                                                customerName = '{{ addslashes($credit->customer_name) }}';
                                             "
                                             class="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                                             History
@@ -171,7 +171,7 @@
                                                 @foreach ($credits as $credit)
                                                     <template x-if="creditId == {{ $credit->id }}">
                                                         @php
-                                                            $payments = $creditPayments[$credit->id] ?? collect();
+                                                            $payments = $creditPayments[$credit->id] ?? [];
                                                         @endphp
 
                                                         @if ($payments->count() > 0)

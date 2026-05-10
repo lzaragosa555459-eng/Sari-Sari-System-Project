@@ -81,12 +81,13 @@ class DashboardController extends Controller
             FROM (
                 SELECT
                     c.id,
-                    (s.total_amount - COALESCE(SUM(cp.amount_paid - cp.`change`), 0)) AS balance
+                    (s.total_amount - COALESCE(SUM(cp.amount_paid), 0)) AS balance
                 FROM credits c
                 LEFT JOIN sales s ON c.sale_id = s.id
                 LEFT JOIN credit_payments cp ON c.id = cp.credit_id
                 GROUP BY c.id, s.total_amount
             ) x
+            WHERE x.balance > 0
         ")->total;
 
         // 📊 CHART DATA (SALES ONLY)
