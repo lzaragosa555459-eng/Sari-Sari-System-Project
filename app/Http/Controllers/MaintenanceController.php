@@ -51,18 +51,14 @@ class MaintenanceController extends Controller
             $request->lead_time
         ]);
 
-        return back();
+        return redirect()->back();
     }
 
     public function update(Request $request, $id)
     {
         DB::update("
             UPDATE supplier_products
-            SET supplier_id = ?,
-                product_id = ?,
-                cost_price = ?,
-                lead_time = ?,
-                updated_at = NOW()
+            SET supplier_id = ?, product_id = ?, cost_price = ?, lead_time = ?, updated_at = NOW()
             WHERE id = ?
         ", [
             $request->supplier_id,
@@ -72,13 +68,57 @@ class MaintenanceController extends Controller
             $id
         ]);
 
-        return back();
+        return redirect()->back();
     }
 
     public function destroy($id)
     {
         DB::delete("DELETE FROM supplier_products WHERE id = ?", [$id]);
 
-        return back();
+        return redirect()->back();
+    }
+
+
+
+    // STORE (ADD)
+    public function storeSupplier(Request $request)
+    {
+        DB::insert("
+            INSERT INTO suppliers (supplier_name, contact_number, address, created_at, updated_at)
+            VALUES (?, ?, ?, NOW(), NOW())
+        ", [
+            $request->supplier_name,
+            $request->contact_number,
+            $request->address
+        ]);
+
+        return back()->with('success', 'Supplier added successfully');
+    }
+
+    // UPDATE
+    public function updateSupplier(Request $request)
+    {
+        DB::update("
+            UPDATE suppliers
+            SET supplier_name = ?, contact_number = ?, address = ?, updated_at = NOW()
+            WHERE id = ?
+        ", [
+            $request->supplier_name,
+            $request->contact_number,
+            $request->address,
+            $request->id
+        ]);
+
+        return back()->with('success', 'Supplier updated successfully');
+    }
+
+    // DELETE
+    public function deleteSupplier($id)
+    {
+        DB::delete("
+            DELETE FROM suppliers WHERE id = ?
+        ", [$id]);
+
+        return back()->with('success', 'Supplier deleted successfully');
     }
 }

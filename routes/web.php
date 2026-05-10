@@ -17,6 +17,9 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -43,12 +46,23 @@ Route::middleware(['auth', 'role:1'])->group(function () {
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 
+    Route::post('/brands', [BrandController::class, 'store']);  
+    Route::put('/brands/{id}', [BrandController::class, 'update']);
+    Route::delete('/brands/{id}', [BrandController::class, 'destroy']);
+
     Route::post('/credit-pay', [CreditController::class, 'store_payment'])->name('credit.pay');
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
 
     Route::post('/supplier-products', [MaintenanceController::class, 'store']);
     Route::put('/supplier-products/{id}', [MaintenanceController::class, 'update']);
     Route::delete('/supplier-products/{id}', [MaintenanceController::class, 'destroy']);
+
+    Route::resource('categories', CategoryController::class)
+        ->only(['store', 'update', 'destroy']);
+
+    Route::post('/suppliers/store', [MaintenanceController::class, 'storeSupplier']);
+    Route::post('/suppliers/update', [MaintenanceController::class, 'updateSupplier']);
+    Route::delete('/suppliers/delete/{id}', [MaintenanceController::class, 'deleteSupplier']);
 });
 Route::middleware(['auth', 'role:2'])->group(function () {
     Route::get('/employee-dashboard', [DashboardController::class, 'employee_index'])->name('employee-dashboard');

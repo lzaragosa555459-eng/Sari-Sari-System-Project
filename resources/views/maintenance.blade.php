@@ -11,22 +11,22 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
             {{-- BRANDS --}}
-            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">Brands</h3>
-                        <p class="text-xs text-gray-500">Manage product manufacturers and brand names.</p>
-                    </div>
-                    <button 
-                        onclick="openBrandModal()"
-                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 shadow-md">
-                        + Add Brand
-                    </button>
-                </div>
+                <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">Brands</h3>
+                            <p class="text-xs text-gray-500">Manage product manufacturers and brand names.</p>
+                        </div>
 
-                <div class="overflow-x-auto">
+                        <button 
+                            onclick="openBrandModal()"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 shadow-md shadow-indigo-100 dark:shadow-none">
+                            + Add Brand
+                        </button>
+                    </div>
+
                     <table class="w-full text-sm text-left">
-                        <thead class="text-[10px] uppercase tracking-widest font-black text-gray-400 bg-gray-50 dark:bg-gray-700/50">
+                        <thead class="text-[10px] uppercase font-black text-gray-400 bg-gray-50 dark:bg-gray-700/50">
                             <tr>
                                 <th class="px-4 py-3">ID</th>
                                 <th class="px-4 py-3">Brand Name</th>
@@ -34,123 +34,123 @@
                                 <th class="px-4 py-3 text-right">Action</th>
                             </tr>
                         </thead>
+
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                             @foreach($brands as $brand)
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
                                     <td class="px-4 py-4 font-mono text-xs text-gray-400">#{{ $brand->id }}</td>
                                     <td class="px-4 py-4 font-bold text-gray-900 dark:text-white">{{ $brand->brand_name }}</td>
-                                    <td class="px-4 py-4 text-gray-500 text-xs">{{ \Carbon\Carbon::parse($brand->created_at)->format('M d, Y') }}</td>
-                                    <td class="px-4 py-4 text-right space-x-2">
-                                        <div class="flex justify-end gap-2">
+                                    <td class="px-4 py-4 text-xs text-gray-500">
+                                        {{ \Carbon\Carbon::parse($brand->created_at)->format('M d, Y') }}
+                                    </td>
+                                    <td class="px-4 py-4 text-right space-x-3">
+                                        <button 
+                                            onclick="openBrandModal(@js($brand))"
+                                            class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase tracking-tighter">
+                                            Edit
+                                        </button>
 
-                                            <button 
-                                                onclick="openBrandModal(@js($brand))"
-                                                class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase">
-                                                Edit
-                                            </button>
-
-                                            <button 
-                                                onclick="openDeleteBrand({{ $brand->id }})"
-                                                class="text-red-600 hover:text-red-900 font-bold text-xs uppercase">
-                                                Delete
-                                            </button>
-
-                                        </div>
+                                        <button 
+                                            onclick="openDeleteBrand({{ $brand->id }})"
+                                            class="text-red-600 hover:text-red-900 font-bold text-xs uppercase tracking-tighter">
+                                            Delete
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+
+                    <div class="mt-4">
+                        {{ $brands->links() }}
+                    </div>
                 </div>
-                <div class="mt-4">
-                    {{ $brands->links() }}
+
+                {{-- BRAND MODAL (Modernized) --}}
+                <div id="brandModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeBrandModal()"></div>
+                    <div class="bg-white dark:bg-gray-800 w-full max-w-md p-8 rounded-3xl shadow-2xl relative z-10 border border-gray-100 dark:border-gray-700">
+                        
+                        <h2 id="brandModalTitle" class="text-xl font-black mb-6 text-gray-800 dark:text-white uppercase tracking-tighter border-b pb-2">Add Brand</h2>
+
+                        <form method="POST" id="brandForm" class="space-y-4">
+                            @csrf
+                            <div id="methodField"></div> {{-- Placeholder for PUT method --}}
+
+                            <div>
+                                <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Brand Name</label>
+                                <input type="text" name="brand_name" id="brand_name"
+                                    class="w-full mt-1 p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                                    placeholder="e.g. Nike, Samsung"
+                                    required>
+                            </div>
+
+                            <div class="flex justify-end gap-3 pt-4">
+                                <button type="button" onclick="closeBrandModal()"
+                                    class="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-sm">
+                                    Cancel
+                                </button>
+
+                                <button type="submit"
+                                    class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 dark:shadow-none transition-transform active:scale-95">
+                                    Save Brand
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div id="brandModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6">
 
-                    <h2 id="brandModalTitle" class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
-                        Add Brand
-                    </h2>
-
-                    <form method="POST" id="brandForm">
-                        @csrf
-
-                        <input type="hidden" name="id" id="brand_id">
-
-                        <label class="text-sm text-gray-600">Brand Name</label>
-                        <input 
-                            type="text" 
-                            name="brand_name" 
-                            id="brand_name"
-                            class="w-full mt-1 mb-4 rounded-lg dark:bg-gray-700 dark:text-white"
-                            required
-                        >
-
-                        <div class="flex justify-end gap-2">
-                            <button type="button" onclick="closeBrandModal()"
-                                class="px-4 py-2 bg-gray-300 rounded-lg">
-                                Cancel
-                            </button>
-
-                            <button type="submit"
-                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
-                                Save
-                            </button>
+                {{-- DELETE MODAL (Modernized) --}}
+                <div id="deleteBrandModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeDeleteBrandModal()"></div>
+                    <div class="bg-white dark:bg-gray-800 w-full max-w-sm p-8 rounded-3xl shadow-2xl relative z-10 text-center">
+                        <div class="w-16 h-16 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </div>
+                        
+                        <h2 class="text-xl font-black text-gray-800 dark:text-white uppercase tracking-tighter">Are you sure?</h2>
+                        <p class="text-sm text-gray-500 mt-2">This action cannot be undone. This brand will be permanently removed.</p>
 
-                    </form>
-
-                </div>
-            </div>
-            <div id="deleteBrandModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl w-full max-w-sm">
-
-                    <h2 class="text-lg font-bold text-red-600 mb-3">Delete Brand?</h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        This action cannot be undone.
-                    </p>
-
-                    <form method="POST" id="deleteBrandForm">
-                        @csrf
-                        @method('DELETE')
-
-                        <div class="flex justify-end gap-2">
+                        <form method="POST" id="deleteBrandForm" class="mt-6 flex gap-3">
+                            @csrf
+                            @method('DELETE')
                             <button type="button" onclick="closeDeleteBrandModal()"
-                                class="px-4 py-2 bg-gray-300 rounded-lg">
-                                Cancel
+                                class="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-sm">
+                                No, Keep it
                             </button>
-
-                            <button type="submit"
-                                class="px-4 py-2 bg-red-600 text-white rounded-lg">
-                                Delete
+                            <button class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-200 dark:shadow-none transition-transform active:scale-95">
+                                Yes, Delete
                             </button>
-                        </div>
-
-                    </form>
-
+                        </form>
+                    </div>
                 </div>
-            </div>
             <script>
             function openBrandModal(data = null) {
-                document.getElementById('brandModal').classList.remove('hidden');
+                const modal = document.getElementById('brandModal');
+                const form = document.getElementById('brandForm');
+                const title = document.getElementById('brandModalTitle');
+
+                modal.classList.remove('hidden');
 
                 if (data) {
-                    // EDIT
-                    document.getElementById('brandModalTitle').innerText = "Edit Brand";
+                    title.innerText = "Edit Brand";
 
-                    document.getElementById('brand_id').value = data.id;
                     document.getElementById('brand_name').value = data.brand_name;
 
-                    document.getElementById('brandForm').action = "/brands/update";
-                } else {
-                    // ADD
-                    document.getElementById('brandModalTitle').innerText = "Add Brand";
+                    form.action = "/brands/" + data.id;
 
-                    document.getElementById('brand_id').value = "";
+                    // change method to PUT
+                    form.querySelector('input[name="_method"]').value = "PUT";
+
+                } else {
+                    title.innerText = "Add Brand";
+
                     document.getElementById('brand_name').value = "";
 
-                    document.getElementById('brandForm').action = "/brands/store";
+                    form.action = "/brands";
+
+                    // reset method to POST
+                    form.querySelector('input[name="_method"]').value = "POST";
                 }
             }
 
@@ -160,7 +160,7 @@
 
             function openDeleteBrand(id) {
                 document.getElementById('deleteBrandModal').classList.remove('hidden');
-                document.getElementById('deleteBrandForm').action = "/brands/delete/" + id;
+                document.getElementById('deleteBrandForm').action = "/brands/" + id;
             }
 
             function closeDeleteBrandModal() {
@@ -230,17 +230,14 @@
 
                     <form method="POST" id="categoryForm">
                         @csrf
+                        <input type="hidden" name="_method" id="category_method" value="POST">
 
                         <input type="hidden" name="id" id="category_id">
 
                         <label class="text-sm text-gray-600">Category Name</label>
-                        <input 
-                            type="text" 
-                            name="category_name" 
-                            id="category_name"
+                        <input type="text" name="category_name" id="category_name"
                             class="w-full mt-1 mb-4 rounded-lg dark:bg-gray-700 dark:text-white"
-                            required
-                        >
+                            required>
 
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="closeCategoryModal()"
@@ -253,7 +250,6 @@
                                 Save
                             </button>
                         </div>
-
                     </form>
 
                 </div>
@@ -266,9 +262,9 @@
                         This action cannot be undone.
                     </p>
 
-                    <form method="POST" id="deleteCategoryForm">
-                        @csrf
-                        @method('DELETE')
+                <form method="POST" id="deleteBrandForm>
+                    @csrf
+                    @method('DELETE')
 
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="closeDeleteCategoryModal()"
@@ -290,6 +286,9 @@
             function openCategoryModal(data = null) {
                 document.getElementById('categoryModal').classList.remove('hidden');
 
+                let form = document.getElementById('categoryForm');
+                let methodField = document.getElementById('category_method');
+
                 if (data) {
                     // EDIT
                     document.getElementById('categoryModalTitle').innerText = "Edit Category";
@@ -297,7 +296,9 @@
                     document.getElementById('category_id').value = data.id;
                     document.getElementById('category_name').value = data.category_name;
 
-                    document.getElementById('categoryForm').action = "/categories/update";
+                    form.action = "/categories/" + data.id;
+                    methodField.value = "PUT";
+
                 } else {
                     // ADD
                     document.getElementById('categoryModalTitle').innerText = "Add Category";
@@ -305,7 +306,8 @@
                     document.getElementById('category_id').value = "";
                     document.getElementById('category_name').value = "";
 
-                    document.getElementById('categoryForm').action = "/categories/store";
+                    form.action = "/categories";
+                    methodField.value = "POST";
                 }
             }
 
@@ -315,7 +317,7 @@
 
             function openDeleteCategory(id) {
                 document.getElementById('deleteCategoryModal').classList.remove('hidden');
-                document.getElementById('deleteCategoryForm').action = "/categories/delete/" + id;
+                document.getElementById('deleteCategoryForm').action = "/categories/" + id;
             }
 
             function closeDeleteCategoryModal() {
@@ -596,7 +598,7 @@
 
         <form id="spForm" method="POST">
             @csrf
-            <input type="hidden" name="_method" id="methodField" value="POST">
+            @method('POST')
 
             {{-- Supplier --}}
             <select name="supplier_id" id="supplier_id" class="w-full mb-3 p-2 rounded">
@@ -632,9 +634,16 @@
     </div>
 </div>
 <script>
+/* =========================
+   OPEN ADD MODAL
+========================= */
 function openAdd() {
-    document.getElementById('spForm').action = '/supplier-products';
-    document.getElementById('methodField').value = 'POST';
+    const form = document.getElementById('spForm');
+
+    form.action = '/supplier-products';
+
+    // Laravel method spoofing
+    setMethod('POST');
 
     document.getElementById('modalTitle').innerText = 'Add Entry';
 
@@ -647,23 +656,69 @@ function openAdd() {
     document.getElementById('spModal').classList.remove('hidden');
 }
 
+/* =========================
+   OPEN EDIT MODAL
+========================= */
 function openEdit(sp) {
-    document.getElementById('spForm').action = '/supplier-products/' + sp.id;
-    document.getElementById('methodField').value = 'PUT';
+    const form = document.getElementById('spForm');
+
+    form.action = '/supplier-products/' + sp.id;
+
+    // IMPORTANT: must be PUT for update route
+    setMethod('PUT');
 
     document.getElementById('modalTitle').innerText = 'Edit Entry';
 
-    document.getElementById('supplier_id').value = sp.supplier_id;
-    document.getElementById('product_id').value = sp.product_id;
-    document.getElementById('cost_price').value = sp.cost_price;
-    document.getElementById('lead_time').value = sp.lead_time;
+    // fill fields safely
+    document.getElementById('supplier_id').value = sp.supplier_id ?? '';
+    document.getElementById('product_id').value = sp.product_id ?? '';
+    document.getElementById('cost_price').value = sp.cost_price ?? '';
+    document.getElementById('lead_time').value = sp.lead_time ?? '';
 
     document.getElementById('spModal').classList.remove('hidden');
 }
 
+/* =========================
+   CLOSE MODAL
+========================= */
 function closeModal() {
     document.getElementById('spModal').classList.add('hidden');
 }
+
+/* =========================
+   METHOD SWITCHER (IMPORTANT FIX)
+   This is what prevents your 405 error
+========================= */
+function setMethod(method) {
+    let methodInput = document.querySelector('#spForm input[name="_method"]');
+
+    if (!methodInput) {
+        methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        document.getElementById('spForm').appendChild(methodInput);
+    }
+
+    methodInput.value = method;
+}
+
+/* =========================
+   OPTIONAL: ESC KEY CLOSE MODAL
+========================= */
+document.addEventListener('keydown', function (e) {
+    if (e.key === "Escape") {
+        closeModal();
+    }
+});
+
+/* =========================
+   OPTIONAL: CLICK OUTSIDE TO CLOSE
+========================= */
+document.getElementById('spModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
 </script>
             </div>
         </div>
