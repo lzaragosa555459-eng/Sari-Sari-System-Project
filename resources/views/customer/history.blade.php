@@ -63,7 +63,6 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50 dark:bg-gray-900/30">
-                                    <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Transaction</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Employee</th>
                                     <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
@@ -75,9 +74,6 @@
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                                 @foreach($sales as $sale)
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
-                                        <td class="px-6 py-4">
-                                            <span class="font-bold text-gray-900 dark:text-white">#{{ $sale->id }}</span>
-                                        </td>
                                         <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                             {{ \Carbon\Carbon::parse($sale->created_at)->format('M d, Y') }}
                                         </td>

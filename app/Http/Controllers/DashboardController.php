@@ -173,7 +173,71 @@ class DashboardController extends Controller
 
          return view('employee.dashboard', compact('todaySales', 'todayTransactions', 'recentSales', 'lowStock', 'cashSales'));
     }
-    public function customer_index(){
-        return view('customer.dashboard');
-    }
+        public function customer_index()
+        {
+            $userId = auth()->id();
+
+            // Get customer record of the currently logged-in user
+            $customer = DB::table('customers')
+                ->where('user_id', $userId)
+                ->first();
+
+            // Default values (prevents "Undefined variable" errors)
+            $pendingTasks = 0;
+            $creditBalance = 0;
+            $totalPurchases = 0;
+            $transactions = [];
+
+            // Only run queries if the user exists in the customers table
+            if ($customer) {
+
+                // 1. Pending Tasks = number of unpaid credits
+                $pendingTasks = DB::table('credits')
+                    ->join('sales', 'credits.sale_id', '=', 'sales.id')
+                    ->where('sales.customer_id', $customer->id)
+                    ->where('credits.status', 'unpaid')
+                    ->count();
+
+                // 2. Credit Balance = total remaining balance of unpaid credits
+                $creditBalance = DB::table('credits')
+                    ->join('sales', 'credits.sale_id', '=', 'sales.id')
+                    ->where('sales.customer_id', $customer->id)
+                    ->where('credits.status', 'unpaid')
+                    ->sum('credits.balance');
+
+                // 3. Total Purchases = number of all sales made by this customer
+                $totalPurchases = DB::table('sales')
+                    ->where('customer_id', $customer->id)
+                    ->count();
+
+                // 4. Recent Transactions
+                $recentTransactions = DB::select("
+                    SELECT
+                        s.id,
+                        s.sale_date,
+                        s.total_amount,
+                        s.payment_method,
+                        CASE
+                            WHEN s.payment_method = 'credit' THEN
+                                CASE
+                                    WHEN c.status = 'paid' THEN 'Paid'
+                                    ELSE 'Credit'
+                                END
+                            ELSE 'Paid'
+                        END AS status
+                    FROM sales s
+                    LEFT JOIN credits c ON c.sale_id = s.id
+                    WHERE s.customer_id = ?
+                    ORDER BY s.sale_date DESC, s.id DESC
+                    LIMIT 10
+                ", [$customer->id]);
+            }
+
+            return view('customer.dashboard', compact(
+                'pendingTasks',
+                'creditBalance',
+                'totalPurchases',
+                'recentTransactions'
+            ));
+        }
 }
