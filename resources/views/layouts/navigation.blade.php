@@ -8,7 +8,7 @@
                     <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
-                     <h2 class="ms-3 text-blue-500 text-2xl font-bold font-sans">ADMIN PORTAL</h2>
+                     <h2 class="ms-3 text-blue-500 text-2xl font-bold font-sans">ADMIN</h2>
                 </div>
 
                 <!-- Navigation Links -->
@@ -30,6 +30,9 @@
                     </x-nav-link>
                     <x-nav-link :href="url('/reports')" :active="request()->is('reports')">
                         {{ __('Reports') }}
+                    </x-nav-link>
+                    <x-nav-link :href="url('/maintenance')" :active="request()->is('maintenance')">
+                        {{ __('Maintenance') }}
                     </x-nav-link>
                 </div>
             </div>
