@@ -101,27 +101,31 @@
                 </div>
 
                 {{-- DELETE MODAL (Modernized) --}}
-                <div id="deleteBrandModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeDeleteBrandModal()"></div>
-                    <div class="bg-white dark:bg-gray-800 w-full max-w-sm p-8 rounded-3xl shadow-2xl relative z-10 text-center">
-                        <div class="w-16 h-16 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </div>
-                        
-                        <h2 class="text-xl font-black text-gray-800 dark:text-white uppercase tracking-tighter">Are you sure?</h2>
-                        <p class="text-sm text-gray-500 mt-2">This action cannot be undone. This brand will be permanently removed.</p>
+                <div id="deleteBrandModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl w-full max-w-sm">
 
-                        <form method="POST" id="deleteBrandForm" class="mt-6 flex gap-3">
+                        <h2 class="text-lg font-bold text-red-600 mb-3">Delete Brand?</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                            This action cannot be undone.
+                        </p>
+
+                        <form method="POST" id="deleteBrandForm">
                             @csrf
                             @method('DELETE')
-                            <button type="button" onclick="closeDeleteBrandModal()"
-                                class="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-sm">
-                                No, Keep it
-                            </button>
-                            <button class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-200 dark:shadow-none transition-transform active:scale-95">
-                                Yes, Delete
-                            </button>
+
+                            <div class="flex justify-end gap-2">
+                                <button type="button" onclick="closeDeleteBrandModal()"
+                                    class="px-4 py-2 bg-gray-300 rounded-lg">
+                                    Cancel
+                                </button>
+
+                                <button type="submit"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-lg">
+                                    Delete
+                                </button>
+                            </div>
                         </form>
+
                     </div>
                 </div>
             <script>
@@ -384,59 +388,76 @@
                 </div>
             </div>
         </div>
-        <div id="supplierModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-2xl p-6">
+        <div id="supplierModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-md transition-opacity" onclick="closeSupplierModal()"></div>
 
-                <h2 id="supplierModalTitle" class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
-                    Add Supplier
-                </h2>
+            <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-3xl shadow-2xl relative z-10 border border-gray-100 dark:border-gray-700 overflow-hidden transform transition-all">
+                
+                <div class="px-8 pt-8 pb-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 id="supplierModalTitle" class="text-2xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
+                                Add Supplier
+                            </h2>
+                            <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest font-semibold">Vendor Information Details</p>
+                        </div>
+                        <button onclick="closeSupplierModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
 
-                <form method="POST" id="supplierForm">
+                <form method="POST" id="supplierForm" class="p-8 pt-4 space-y-5">
                     @csrf
-
                     <input type="hidden" name="id" id="supplier_id">
 
-                    {{-- Supplier Name --}}
-                    <label class="text-sm">Supplier Name</label>
-                    <input 
-                        type="text" 
-                        name="supplier_name" 
-                        id="supplier_name"
-                        class="w-full mb-3 rounded-lg dark:bg-gray-700 dark:text-white"
-                        required
-                    >
+                    <div class="space-y-1">
+                        <label for="supplier_name" class="block text-[10px] font-black uppercase tracking-[0.1em] text-indigo-600 dark:text-indigo-400 ml-1">
+                            Supplier Name
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="text" name="supplier_name" id="supplier_name"
+                                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-800 focus:ring-0 transition-all dark:text-white placeholder-gray-400"
+                                placeholder="e.g. Global Logistics Corp" required
+                            >
+                        </div>
+                    </div>
 
-                    {{-- Contact --}}
-                    <label class="text-sm">Contact Number</label>
-                    <input 
-                        type="text" 
-                        name="contact_number" 
-                        id="contact_number"
-                        class="w-full mb-3 rounded-lg dark:bg-gray-700 dark:text-white"
-                    >
+                    <div class="space-y-1">
+                        <label for="contact_number" class="block text-[10px] font-black uppercase tracking-[0.1em] text-gray-400 ml-1">
+                            Contact Number
+                        </label>
+                        <input 
+                            type="text" name="contact_number" id="contact_number"
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-800 focus:ring-0 transition-all dark:text-white placeholder-gray-400"
+                            placeholder="+1 (555) 000-0000"
+                        >
+                    </div>
 
-                    {{-- Address --}}
-                    <label class="text-sm">Address</label>
-                    <textarea 
-                        name="address" 
-                        id="address"
-                        class="w-full mb-4 rounded-lg dark:bg-gray-700 dark:text-white"
-                    ></textarea>
+                    <div class="space-y-1">
+                        <label for="address" class="block text-[10px] font-black uppercase tracking-[0.1em] text-gray-400 ml-1">
+                            Business Address
+                        </label>
+                        <textarea 
+                            name="address" id="address" rows="3"
+                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-800 focus:ring-0 transition-all dark:text-white placeholder-gray-400 resize-none"
+                            placeholder="Street, City, State, ZIP"
+                        ></textarea>
+                    </div>
 
-                    <div class="flex justify-end gap-2">
+                    <div class="flex items-center gap-3 pt-4">
                         <button type="button" onclick="closeSupplierModal()"
-                            class="px-4 py-2 bg-gray-300 rounded-lg">
+                            class="flex-1 px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors uppercase tracking-widest">
                             Cancel
                         </button>
 
                         <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
-                            Save
+                            class="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-95">
+                            Save Supplier
                         </button>
                     </div>
-
                 </form>
-
             </div>
         </div>
         <div id="deleteSupplierModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -569,15 +590,11 @@
                             Edit
                         </button>
 
-                        <form action="/supplier-products/{{ $sp->id }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-
-                            <button onclick="return confirm('Delete this record?')"
-                                class="text-red-600 font-bold text-xs">
-                                Delete
-                            </button>
-                        </form>
+                        <button type="button" 
+                            onclick="openDeleteSPModal({{ $sp->id }})"
+                            class="text-red-600 font-bold text-xs hover:underline">
+                            Delete
+                        </button>
 
                     </td>
                 </tr>
@@ -586,53 +603,131 @@
         </table>
     </div>
 </div>
-<div id="spModal"
-    class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+<div id="spModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-xl transition-opacity" onclick="closeModal()"></div>
 
-    <div class="bg-white dark:bg-gray-800 w-full max-w-lg p-6 rounded-2xl">
-
-        <div class="flex justify-between mb-4">
-            <h2 id="modalTitle" class="text-lg font-black text-white">Add Entry</h2>
-            <button onclick="closeModal()" class="text-white text-xl">×</button>
+    <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 border border-white/20 overflow-hidden transform transition-all">
+        
+        <div class="px-8 pt-8 pb-6 bg-gradient-to-b from-gray-50/50 dark:from-gray-700/30 to-transparent">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 id="modalTitle" class="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">Catalog Entry</h2>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Link Product to Supplier</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
         </div>
 
-        <form id="spForm" method="POST">
+        <form id="spForm" method="POST" class="p-8 pt-2 space-y-6">
             @csrf
             @method('POST')
 
-            {{-- Supplier --}}
-            <select name="supplier_id" id="supplier_id" class="w-full mb-3 p-2 rounded">
-                @foreach($suppliers as $s)
-                    <option value="{{ $s->id }}">{{ $s->supplier_name }}</option>
-                @endforeach
-            </select>
+            <div class="grid grid-cols-1 gap-5">
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Select Supplier</label>
+                    <div class="relative group">
+                        <select name="supplier_id" id="supplier_id" 
+                            class="appearance-none w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all dark:text-white outline-none cursor-pointer">
+                            @foreach($suppliers as $s)
+                                <option value="{{ $s->id }}">{{ $s->supplier_name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
 
-            {{-- Product --}}
-            <select name="product_id" id="product_id" class="w-full mb-3 p-2 rounded">
-                @foreach($products as $p)
-                    <option value="{{ $p->id }}">{{ $p->product_name }}</option>
-                @endforeach
-            </select>
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Select Product</label>
+                    <div class="relative group">
+                        <select name="product_id" id="product_id" 
+                            class="appearance-none w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all dark:text-white outline-none cursor-pointer">
+                            @foreach($products as $p)
+                                <option value="{{ $p->id }}">{{ $p->product_name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <input type="number" step="0.01" name="cost_price" id="cost_price"
-                placeholder="Cost Price" class="w-full mb-3 p-2 rounded">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Cost Price (₱)</label>
+                    <input type="number" step="0.01" name="cost_price" id="cost_price"
+                        class="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 transition-all dark:text-white"
+                        placeholder="0.00">
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Lead Time (Days)</label>
+                    <input type="number" name="lead_time" id="lead_time"
+                        class="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-2xl focus:border-indigo-500 transition-all dark:text-white"
+                        placeholder="e.g. 7">
+                </div>
+            </div>
 
-            <input type="number" name="lead_time" id="lead_time"
-                placeholder="Lead Time (days)" class="w-full mb-3 p-2 rounded">
-
-            <div class="flex justify-end gap-2">
+            <div class="flex items-center gap-3 pt-4">
                 <button type="button" onclick="closeModal()"
-                    class="px-4 py-2 bg-gray-400 rounded-xl">
-                    Cancel
+                    class="flex-1 px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                    Dismiss
                 </button>
-
-                <button class="px-4 py-2 bg-indigo-600 text-white rounded-xl">
-                    Save
+                <button type="submit"
+                    class="flex-[2] px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-indigo-200 dark:shadow-none transition-all active:scale-95">
+                    Save Entry
                 </button>
             </div>
         </form>
     </div>
 </div>
+<div id="deleteSPModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl w-full max-w-sm">
+
+        <h2 class="text-lg font-bold text-red-600 mb-3">Delete Record?</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            This action cannot be undone.
+        </p>
+
+        <form method="POST" id="deleteSPForm">
+            @csrf
+            @method('DELETE')
+
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeDeleteSPModal()"
+                    class="px-4 py-2 bg-gray-300 rounded-lg">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg">
+                    Delete
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<script>
+    function openDeleteSPModal(id) {
+        const form = document.getElementById('deleteSPForm');
+        form.action = `/supplier-products/${id}`; // Sets the correct URL
+        document.getElementById('deleteSPModal').classList.remove('hidden');
+    }
+
+    function closeDeleteSPModal() {
+        document.getElementById('deleteSPModal').classList.add('hidden');
+    }    
+</script>
+
 <script>
 /* =========================
    OPEN ADD MODAL

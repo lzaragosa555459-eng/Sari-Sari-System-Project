@@ -32,7 +32,13 @@
                         {{ __('Reports') }}
                     </x-nav-link>
                     <x-nav-link :href="url('/maintenance')" :active="request()->is('maintenance')">
-                        {{ __('Maintenance') }}
+                        <svg class="w-4 h-4 mr-2 inline-block" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.591 1.09c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.09 2.59c1.756.427 1.756 2.925 0 3.352a1.724 1.724 0 00-1.09 2.59c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.59 1.09c-.427 1.756-2.925 1.756-3.352 0a1.724 1.724 0 00-2.59-1.09c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.09-2.59c-1.756-.427-1.756-2.925 0-3.352a1.724 1.724 0 001.09-2.59c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.591-1.09z" />
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+
+                        Maintenance
                     </x-nav-link>
                 </div>
             </div>
