@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
-use Carbon/Carbon;
+use Carbon\Carbon;
 class BookController extends Controller
 {
     public function index()
@@ -184,7 +184,8 @@ class BookController extends Controller
                 bookings.updated_at,
 
                 users.name AS customer_name,
-                products.product_name AS product_name
+                products.product_name AS product_name,
+                products.price AS product_price
 
             FROM bookings
             LEFT JOIN users ON bookings.customer_id = users.id

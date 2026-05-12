@@ -62,6 +62,10 @@
                                 <span class="px-2 py-1 rounded bg-yellow-500 text-white">
                                     Pending
                                 </span>
+                            @elseif($booking->status == 'cancelled')
+                                <span class="px-2 py-1 rounded bg-red-500 text-white">
+                                    Cancelled
+                                </span>
                             @else
                                 <span class="px-2 py-1 rounded bg-green-600 text-white">
                                     Completed
@@ -79,7 +83,8 @@
                                     class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
                                     Checkout
                                 </button>
-
+                            @elseif($booking->status == 'cancelled')
+                                <span class="text-gray-400">None</span>
                             @else
                                 <span class="text-gray-400">Done</span>
                             @endif

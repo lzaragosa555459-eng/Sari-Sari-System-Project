@@ -18,25 +18,22 @@
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Booking ID
+                                    Product
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Customer ID
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Product ID
+                                    Price
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Quantity
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Total
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Status
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Booking Date
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Last Updated
                                 </th>
                                 <th class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Actions
@@ -48,25 +45,25 @@
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             @forelse ($bookings as $booking)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                                    
-                                    <!-- Booking ID -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
-                                        #{{ $booking->id }}
+
+                                    <!-- Product Name -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                        {{ $booking->product_name }}
                                     </td>
 
-                                    <!-- Customer ID -->
+                                    <!-- Price -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {{ $booking->customer_id }}
-                                    </td>
-
-                                    <!-- Product ID -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {{ $booking->product_id }}
+                                        ₱{{ number_format($booking->product_price, 2) }}
                                     </td>
 
                                     <!-- Quantity -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                         {{ $booking->quantity }}
+                                    </td>
+
+                                    <!-- Total -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
+                                        ₱{{ number_format($booking->product_price * $booking->quantity, 2) }}
                                     </td>
 
                                     <!-- Status -->
@@ -90,10 +87,6 @@
                                         {{ \Carbon\Carbon::parse($booking->created_at)->format('M d, Y h:i A') }}
                                     </td>
 
-                                    <!-- Updated At -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($booking->updated_at)->format('M d, Y h:i A') }}
-                                    </td>
 
                                     <!-- Actions -->
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
