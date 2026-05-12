@@ -137,6 +137,10 @@ Route::middleware(['auth', 'role:3'])->group(function () {
         ->name('customer.cart.checkout');
     Route::get('/customer/history', [HistoryController::class, 'history_customer'])->name('customer-history');
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart-clear');
+
+    Route::get('/customer/booking', [BookController::class, 'customer_booking_history'])->name('booking');
+    Route::patch('/bookings/{id}/cancel', [BookController::class, 'cancel'])
+        ->name('bookings.cancel');
     
 });
 require __DIR__.'/auth.php';

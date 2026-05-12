@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
+use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
+use Carbon/Carbon;
 class BookController extends Controller
 {
     public function index()
@@ -167,5 +169,59 @@ class BookController extends Controller
             DB::rollBack();
             return back()->with('error', $e->getMessage());
         }
+    }
+
+    public function customer_booking_history()
+    {
+        $bookings = collect(DB::select("
+            SELECT 
+                bookings.id,
+                bookings.customer_id,
+                bookings.product_id,
+                bookings.quantity,
+                bookings.status,
+                bookings.created_at,
+                bookings.updated_at,
+
+                users.name AS customer_name,
+                products.product_name AS product_name
+
+            FROM bookings
+            LEFT JOIN users ON bookings.customer_id = users.id
+            LEFT JOIN products ON bookings.product_id = products.id
+
+            WHERE bookings.customer_id = ?
+            ORDER BY bookings.created_at DESC
+        ", [Auth::id()]))->map(function ($booking) {
+            $booking->created_at = Carbon::parse($booking->created_at);
+            $booking->updated_at = Carbon::parse($booking->updated_at);
+            return $booking;
+        });
+
+        return view('customer.booking', compact('bookings'));
+    }
+
+    public function cancel($id)
+    {
+        // Find the booking that belongs to the logged-in customer
+        $booking = Booking::where('id', $id)
+            ->where('customer_id', Auth::id())
+            ->firstOrFail();
+
+        // Only pending bookings can be cancelled
+        if ($booking->status !== 'pending') {
+            return redirect()
+                ->back()
+                ->with('error', 'Only pending bookings can be cancelled.');
+        }
+
+        // Update the status
+        $booking->update([
+            'status' => 'cancelled',
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Booking cancelled successfully.');
     }
 }

@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('order')" :active="request()->routeIs('customer.order')">
                         Order
                     </x-nav-link>
+                    <x-nav-link :href="route('booking')" :active="request()->routeIs('customer.booking')">
+                        My bookings
+                    </x-nav-link>
                     <x-nav-link :href="route('customer-history')" :active="request()->routeIs('customer.history')">
                         History
                     </x-nav-link>
