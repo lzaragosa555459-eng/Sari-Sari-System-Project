@@ -8,6 +8,7 @@ class SaleController extends Controller
 {
     public function index()
     {
+       
         $sales = DB::table('sales as s')
             ->leftJoin('customers as c', 's.customer_id', '=', 'c.id')
             ->leftJoin('users as u', 'c.user_id', '=', 'u.id')

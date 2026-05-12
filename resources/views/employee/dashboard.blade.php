@@ -64,7 +64,7 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        {{ \Carbon\Carbon::parse($sale->sale_date)->diffForHumans() }}
+                                        {{ \Carbon\Carbon::parse($sale->created_at)->diffForHumans() }}
                                     </td>
                                 </tr>
                                 @empty
