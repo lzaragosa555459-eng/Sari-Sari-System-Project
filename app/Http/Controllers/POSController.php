@@ -110,124 +110,124 @@ class PosController extends Controller
     }
 
     // 🧾 Checkout / Save Sale
-public function checkout(Request $request)
-{
-    $cart = Session::get('cart', []);
+    public function checkout(Request $request)
+    {
+        $cart = Session::get('cart', []);
 
-    if (empty($cart)) {
-        return back()->with('error', 'Cart is empty.');
-    }
-
-    $total = collect($cart)->sum(function ($item) {
-        return $item['price'] * $item['quantity'];
-    });
-
-    $paymentMethod = $request->payment_method;
-    $isCredit = $paymentMethod === 'credit';
-
-    $amountPaid = 0;
-    $change = 0;
-
-    // CASH ONLY VALIDATION
-    if ($paymentMethod === 'cash') {
-
-        $amountPaid = $request->amount_paid ?? 0;
-
-        if ($amountPaid < $total) {
-            return back()->with('error', 'Insufficient payment.');
+        if (empty($cart)) {
+            return back()->with('error', 'Cart is empty.');
         }
 
-        $change = $amountPaid - $total;
-    }
+        $total = collect($cart)->sum(function ($item) {
+            return $item['price'] * $item['quantity'];
+        });
 
-    // 1. CREATE SALE (NO SIDE EFFECTS YET)
-    DB::insert("
-        INSERT INTO sales (
-            customer_id, employee_id, sale_date,
-            total_amount, amount_paid, `change`,
-            payment_method, created_at, updated_at
-        )
-        VALUES (?, ?, CURDATE(), ?, ?, ?, ?, NOW(), NOW())
-    ", [
-        $request->customer_id ?? null,
-        auth()->id(),
-        $total,
-        $amountPaid,
-        $change,
-        $paymentMethod,
-    ]);
+        $paymentMethod = $request->payment_method;
+        $isCredit = $paymentMethod === 'credit';
 
-    $saleId = DB::getPdo()->lastInsertId();
+        $amountPaid = 0;
+        $change = 0;
 
-    // 2. SALE DETAILS + INVENTORY
-    foreach ($cart as $item) {
+        // CASH ONLY VALIDATION
+        if ($paymentMethod === 'cash') {
 
+            $amountPaid = $request->amount_paid ?? 0;
+
+            if ($amountPaid < $total) {
+                return back()->with('error', 'Insufficient payment.');
+            }
+
+            $change = $amountPaid - $total;
+        }
+
+        // 1. CREATE SALE (NO SIDE EFFECTS YET)
         DB::insert("
-            INSERT INTO sale_details (sale_id, product_id, quantity, created_at, updated_at)
-            VALUES (?, ?, ?, NOW(), NOW())
+            INSERT INTO sales (
+                customer_id, employee_id, sale_date,
+                total_amount, amount_paid, `change`,
+                payment_method, created_at, updated_at
+            )
+            VALUES (?, ?, CURDATE(), ?, ?, ?, ?, NOW(), NOW())
         ", [
-            $saleId,
-            $item['id'],
-            $item['quantity'],
-        ]);
-
-        DB::update("
-            UPDATE inventory
-            SET quantity_on_hand = quantity_on_hand - ?
-            WHERE product_id = ?
-        ", [
-            $item['quantity'],
-            $item['id']
-        ]);
-    }
-
-    // 3. CASH UPDATE ONLY IF CASH
-    if ($paymentMethod === 'cash') {
-
-        $cash = DB::selectOne("SELECT * FROM store_cash LIMIT 1");
-
-        DB::update("
-            UPDATE store_cash
-            SET current_balance = current_balance + ?,
-                total_income = total_income + ?,
-                updated_at = NOW()
-            WHERE id = ?
-        ", [
+            $request->customer_id ?? null,
+            auth()->id(),
             $total,
-            $total,
-            $cash->id
+            $amountPaid,
+            $change,
+            $paymentMethod,
         ]);
 
-        // receipt
-        Session::forget('cart');
+        $saleId = DB::getPdo()->lastInsertId();
 
-        Session::put('receipt', [
-            'items' => $cart,
-            'subtotal' => $total,
-            'total' => $total,
-            'paid' => $amountPaid,
-            'change' => $change,
-        ]);
+        // 2. SALE DETAILS + INVENTORY
+        foreach ($cart as $item) {
 
-        return back()->with('showReceipt', true);
+            DB::insert("
+                INSERT INTO sale_details (sale_id, product_id, quantity, created_at, updated_at)
+                VALUES (?, ?, ?, NOW(), NOW())
+            ", [
+                $saleId,
+                $item['id'],
+                $item['quantity'],
+            ]);
+
+            DB::update("
+                UPDATE inventory
+                SET quantity_on_hand = quantity_on_hand - ?
+                WHERE product_id = ?
+            ", [
+                $item['quantity'],
+                $item['id']
+            ]);
+        }
+
+        // 3. CASH UPDATE ONLY IF CASH
+        if ($paymentMethod === 'cash') {
+
+            $cash = DB::selectOne("SELECT * FROM store_cash LIMIT 1");
+
+            DB::update("
+                UPDATE store_cash
+                SET current_balance = current_balance + ?,
+                    total_income = total_income + ?,
+                    updated_at = NOW()
+                WHERE id = ?
+            ", [
+                $total,
+                $total,
+                $cash->id
+            ]);
+
+            // receipt
+            Session::forget('cart');
+
+            Session::put('receipt', [
+                'items' => $cart,
+                'subtotal' => $total,
+                'total' => $total,
+                'paid' => $amountPaid,
+                'change' => $change,
+            ]);
+
+            return back()->with('showReceipt', true);
+        }
+
+        // 4. CREDIT FLOW (NO CASH UPDATE!)
+        if ($isCredit) {
+
+            Session::put('credit_checkout', [
+                'sale_id' => $saleId,
+                'total' => $total,
+                'cart' => $cart
+            ]);
+
+            Session::forget('cart');
+
+            return redirect()
+                ->route('pos')
+                ->with('openCreditModal', true);
+        }
     }
-
-    // 4. CREDIT FLOW (NO CASH UPDATE!)
-    if ($isCredit) {
-
-        Session::put('credit_checkout', [
-            'sale_id' => $saleId,
-            'total' => $total,
-            'cart' => $cart
-        ]);
-
-        Session::forget('cart');
-
-        return redirect()
-            ->route('pos')
-            ->with('openCreditModal', true);
-    }
-}
 
     // 🧹 Clear cart
     public function clearCart()

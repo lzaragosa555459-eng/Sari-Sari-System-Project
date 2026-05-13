@@ -96,7 +96,7 @@
 
                     {{-- TOTAL REVENUE (REAL BUSINESS VALUE) --}}
                     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border-l-4 border-green-600">
-                        <p class="text-sm font-semibold text-gray-400">Total Revenue Today</p>
+                        <p class="text-sm font-semibold text-gray-400">Total Revenue</p>
                         <p class="mt-1 text-2xl font-bold text-white">
                             ₱{{ number_format(($totalRevenueToday ?? 0), 2) }}
                         </p>

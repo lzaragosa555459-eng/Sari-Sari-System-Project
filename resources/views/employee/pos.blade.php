@@ -254,7 +254,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Due Date</label>
-                                <input type="date" name="due_date" class="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 font-semibold focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white">
+                                <input type="date" name="due_date" class="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-xl p-3 font-semibold focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white" required>
                             </div>
                         </div>
 
