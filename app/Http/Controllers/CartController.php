@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Inventory;
 class CartController extends Controller
 {
     public function index()
@@ -107,14 +107,28 @@ class CartController extends Controller
         return redirect()->route('order')->with('success', 'Booking placed successfully!');
     }
     public function clear(Request $request)
-        {
-            // Remove the cart and total from the session
-            $request->session()->forget('cart');
-            $request->session()->forget('total');
+    {
+        // Get cart items from session
+        $cart = session('cart', []);
 
-            // Optional: If you use a specific session key like 'shopping_cart'
-            // session()->forget('shopping_cart');
+        // Restore quantities to the inventory table
+        foreach ($cart as $productId => $item) {
+            // Find the inventory record for this product
+            $inventory = Inventory::where('product_id', $productId)->first();
 
-            return redirect()->route('order')->with('success', 'Order has been cancelled and cart is cleared.');
+            if ($inventory) {
+                // Add the reserved quantity back to quantity_on_hand
+                $inventory->quantity_on_hand += $item['quantity'];
+                $inventory->save();
+            }
         }
+
+        // Remove cart data from session
+        $request->session()->forget('cart');
+        $request->session()->forget('total');
+
+        return redirect()
+            ->route('order')
+            ->with('success', 'Order has been cancelled and inventory has been restored.');
+    }
 }
