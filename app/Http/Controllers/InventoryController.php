@@ -66,17 +66,66 @@ class InventoryController extends Controller
 
     public function restock(Request $request, $id)
     {
+        // Validate the input
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Find the inventory record for the selected product
         $inventory = Inventory::where('product_id', $id)->first();
 
         if (!$inventory) {
             return back()->with('error', 'Inventory not found.');
         }
 
+        // Update the current stock quantity
         $inventory->quantity_on_hand += $request->quantity;
         $inventory->save();
 
+        // Record the stock-in transaction
+        DB::table('stock_in')->insert([
+            'inventory_id'   => $inventory->id,
+            'quantity'       => $request->quantity,
+            'received_date'  => now()->toDateString(),
+            'reference_type' => 'restock',
+            'reference_id'   => time(), // Generates a simple unique reference number
+            'created_at'     => now(),
+            'updated_at'     => now(),
+        ]);
+
         return back()->with('success', 'Product restocked successfully.');
     }
+    public function movements()
+    {
+        $movements = DB::select("
+            SELECT
+                p.product_name,
+                si.quantity,
+                'Stock In' AS movement_type,
+                si.reference_type,
+                si.reference_id,
+                si.created_at AS movement_date
+            FROM stock_in si
+            INNER JOIN inventory i ON si.inventory_id = i.id
+            INNER JOIN products p ON i.product_id = p.id
 
+            UNION ALL
+
+            SELECT
+                p.product_name,
+                so.quantity,
+                'Stock Out' AS movement_type,
+                so.reference_type,
+                so.reference_id,
+                so.created_at AS movement_date
+            FROM stock_out so
+            INNER JOIN inventory i ON so.inventory_id = i.id
+            INNER JOIN products p ON i.product_id = p.id
+
+            ORDER BY movement_date DESC
+        ");
+
+        return view('movements', compact('movements'));
+    }
 
 }

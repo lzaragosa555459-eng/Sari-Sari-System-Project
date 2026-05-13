@@ -11,6 +11,12 @@
             >
                 + Add Product
             </button>
+            <a href="{{ route('inventory.movements') }}"
+            class="ml-4 inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700
+                    text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-lg
+                    hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                Inventory Movements
+            </a>
         </div>
   
     </x-slot>
