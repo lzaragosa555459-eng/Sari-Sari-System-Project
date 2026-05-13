@@ -103,7 +103,12 @@
                                     >
                                         Edit
                                     </button>
-
+                                    <button
+                                        onclick="openRestockModal({{ $product->id }}, '{{ $product->product_name }}')"
+                                        class="px-2 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200"
+                                    >
+                                        Restock
+                                    </button>
                                     <form action="{{ route('products.destroy', $product->id) }}" method="POST"
                                         onsubmit="return confirm('Delete this product?')">
 
@@ -365,6 +370,44 @@
         </form>
     </div>
 </x-modal>
+<x-modal name="restock-product" :show="false" focusable>
+    <div class="bg-white sm:rounded-2xl p-6">
+
+        <h2 class="text-xl font-bold text-gray-900">
+            Restock Product
+        </h2>
+
+        <p class="text-sm text-gray-500 mt-1" id="restock_product_name"></p>
+
+        <form method="POST" id="restockForm" class="mt-6">
+            @csrf
+
+            <input type="hidden" name="product_id" id="restock_product_id">
+
+            <div>
+                <label class="block text-sm font-semibold">Quantity to Add</label>
+                <input
+                    type="number"
+                    name="quantity"
+                    min="1"
+                    class="w-full rounded-lg border-gray-300 shadow-sm"
+                    required
+                >
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" x-on:click="$dispatch('close')">
+                    Cancel
+                </button>
+
+                <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg">
+                    Restock
+                </button>
+            </div>
+
+        </form>
+    </div>
+</x-modal>
 <script>
 function openEditModal(product) {
 
@@ -377,6 +420,15 @@ function openEditModal(product) {
     document.getElementById('edit_id').value = product.id;
 
     window.dispatchEvent(new CustomEvent('open-modal', { detail: 'edit-product' }));
+}
+function openRestockModal(productId, productName) {
+
+    document.getElementById('restock_product_id').value = productId;
+    document.getElementById('restock_product_name').innerText = productName;
+
+    document.getElementById('restockForm').action = `/inventory/restock/${productId}`;
+
+    window.dispatchEvent(new CustomEvent('open-modal', { detail: 'restock-product' }));
 }
 </script>
 </x-app-layout>

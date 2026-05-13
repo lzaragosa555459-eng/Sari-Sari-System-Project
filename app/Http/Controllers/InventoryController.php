@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Inventory;
 
 class InventoryController extends Controller
 {
@@ -25,6 +25,7 @@ class InventoryController extends Controller
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN brands b ON p.brand_id = b.id
             LEFT JOIN inventory i ON p.id = i.product_id
+            ORDER BY p.product_name DESC
         ");
 
         $totalProducts = DB::selectOne("
@@ -61,7 +62,21 @@ class InventoryController extends Controller
             'categories'
         ));
     }
-    
+
+
+    public function restock(Request $request, $id)
+    {
+        $inventory = Inventory::where('product_id', $id)->first();
+
+        if (!$inventory) {
+            return back()->with('error', 'Inventory not found.');
+        }
+
+        $inventory->quantity_on_hand += $request->quantity;
+        $inventory->save();
+
+        return back()->with('success', 'Product restocked successfully.');
+    }
 
 
 }

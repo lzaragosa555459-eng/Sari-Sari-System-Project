@@ -63,6 +63,8 @@ Route::middleware(['auth', 'role:1'])->group(function () {
     Route::post('/suppliers/store', [MaintenanceController::class, 'storeSupplier']);
     Route::post('/suppliers/update', [MaintenanceController::class, 'updateSupplier']);
     Route::delete('/suppliers/delete/{id}', [MaintenanceController::class, 'deleteSupplier']);
+
+    Route::post('/inventory/restock/{id}', [InventoryController::class, 'restock']);
 });
 Route::middleware(['auth', 'role:2'])->group(function () {
     Route::get('/employee-dashboard', [DashboardController::class, 'employee_index'])->name('employee-dashboard');
