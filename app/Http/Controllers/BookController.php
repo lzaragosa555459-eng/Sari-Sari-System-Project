@@ -7,6 +7,7 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 class BookController extends Controller
+
 {
     public function index()
     {
