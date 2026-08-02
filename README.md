@@ -1,71 +1,150 @@
 # 🏪 Sari-Sari Store Management System
 
-## 📌 Overview
-The Sari-Sari Store is a small family-owned business that serves the local community by providing affordable everyday essentials such as food, snacks, drinks, and household supplies. It also offers services like prepaid mobile load and product reservations (“pabook”).
+A web-based **Sari-Sari Store Management System** built with **Laravel** to help small businesses manage inventory, sales, suppliers, customer reservations ("Pabook"), and prepaid mobile load transactions.
+
+The system digitizes traditional paper-based record keeping, making store operations more organized, efficient, and easier to monitor.
 
 ---
 
-## 🛒 Nature of Business
-The store sells basic daily necessities, including:
+## ✨ Features
 
-- Canned goods  
-- Instant noodles  
-- Snacks and soft drinks  
-- Soap and cleaning products  
-- Cooking ingredients  
-
-### Additional Services
-- 📱 Prepaid mobile load services  
-- 🍾 Beverage sales with bottle deposit system  
-- 📝 Product reservation (“pabook”) system  
-
----
-
-## 💻 Tech Stack
-This system was built using:
-
-- Laravel Breeze  
-- PHP  
-- MySQL  
-- JavaScript  
-- HTML  
-- CSS  
-- Docker  
+- 📦 Inventory Management
+- 💰 Point of Sale (POS)
+- 🛒 Sales Transaction Management
+- 📱 Prepaid Mobile Load Transactions
+- 📝 Customer Reservation (Pabook)
+- 🚚 Supplier Management
+- 📦 Stock Monitoring
+- 📊 Sales Reports
+- 👤 User Authentication
+- 🔐 Role-Based Access Control
 
 ---
 
-## 📊 Estimated Transactions
-The store handles approximately:
+## 🛠️ Tech Stack
 
-- **500 transactions per week**
-- **70–75 transactions per day**
-
-This reflects frequent small purchases based on the “tingi system” commonly used in local communities.
-
----
-
-## 📁 System Scope
-The system focuses on the following operations:
-
-- Sales of basic goods  
-- Prepaid load transactions  
-- Supplier deliveries  
-- Customer reservations (“pabook”)  
-- Daily over-the-counter purchases  
+- Laravel
+- Laravel Breeze
+- PHP
+- MySQL
+- JavaScript
+- HTML5
+- CSS3
+- Docker
 
 ---
 
-## 🧾 Document Analysis
-The store uses manual records to manage operations, including:
+## 📂 Project Structure
 
-- Sales record notebook  
-- Load transaction log  
-- Reservation list (“pabook”)  
-- Supplier delivery records  
-
-These help track sales, inventory, and customer orders without a computerized system.
+```
+app/
+database/
+public/
+resources/
+routes/
+storage/
+```
 
 ---
 
-## 📍 Data Source
-This study is based on a real family-owned sari-sari store. Data was gathered through direct observation of daily operations, including customer purchases, deliveries, prepaid load transactions, and reservation activities.
+## 🚀 Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/sari-sari-store.git
+```
+
+### 2. Navigate to the project
+
+```bash
+cd sari-sari-store
+```
+
+### 3. Install dependencies
+
+```bash
+composer install
+npm install
+```
+
+### 4. Create the environment file
+
+```bash
+cp .env.example .env
+```
+
+### 5. Generate the application key
+
+```bash
+php artisan key:generate
+```
+
+### 6. Configure your database
+
+Update your `.env` file:
+
+```env
+DB_DATABASE=your_database
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 7. Run migrations and seeders
+
+```bash
+php artisan migrate --seed
+```
+
+### 8. Create the storage link
+
+```bash
+php artisan storage:link
+```
+
+### 9. Start the application
+
+```bash
+php artisan serve
+npm run dev
+```
+
+Visit:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+## 📊 Main Modules
+
+- Dashboard
+- Inventory
+- Products
+- Sales
+- Suppliers
+- Customer Reservations
+- Mobile Load
+- Reports
+- User Management
+
+---
+
+## 🔐 Default Login
+
+Administrator
+
+```
+Email:
+admin@example.com
+
+Password:
+password
+```
+
+---
+
+## 👨‍💻 Developer
+
+Created by **Liz Zaragosa** | Second year IT6 Project
